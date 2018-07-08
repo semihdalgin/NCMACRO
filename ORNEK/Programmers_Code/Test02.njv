@@ -1,0 +1,24 @@
+//
+// Dil : Java
+// Yaratilan veya hazir bir obje ekranda yurutulur.
+// Sonucta secilen nokta geri donecektir.
+// Bu ornekte ayrica sekil secimide gosterilmistir.
+//
+function Main() {
+var shapesel,c,o;
+  with (Netcad) {
+    shapesel = NewShapeSelect();
+    if (shapesel.SelectShape()) {
+      c = Newc(0,0,0);
+      o = MakeSembol(c, shapesel.sembolno, shapesel.refno, shapesel.size, 0,0);
+      while (WalkObject('Þekil Ýçin Yer Seç',c,-1,o)) {
+        o.p1 = c;
+        AddObject(o);
+      }
+      c = null;
+      o = null;
+    }
+    shapesel = null;
+  }
+}
+

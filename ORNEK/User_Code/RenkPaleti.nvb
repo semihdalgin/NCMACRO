@@ -1,0 +1,31 @@
+' Bu ornek Tanýmlý Paletin Lejandýný Hazýrlar
+
+Sub Main
+  Dim i,j,o, p
+  with netcad
+    set p = .NewPoly
+    p.AddCoor(.NewC(0,0,0))
+    p.AddCoor(.NewC(100,0,0))
+    p.AddCoor(.NewC(100,100,0))
+    p.AddCoor(.NewC(0,100,0))
+    for i = 0 to 15
+       p.Cor(0).Y=i*100
+       p.cor(1).Y=p.cor(0).Y+80
+       p.cor(2).Y=p.cor(0).Y+80
+       p.cor(3).Y=p.cor(0).Y
+       for j = 0 to 15
+         p.Cor(0).X=1500-j*100
+         p.cor(1).X=p.cor(0).X
+         p.cor(2).X=p.cor(0).X+80
+         p.cor(3).X=p.cor(0).X+80
+         set o = .MakePline("",POLYCLOSED+POLYFILLED,0,0,0,0,p)
+         o.renk = J*16+I
+         .AddObject o
+         set o = nothing
+       next
+    next
+    set p = nothing
+    .FindWorld
+  end with
+end sub
+

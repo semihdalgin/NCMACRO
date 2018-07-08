@@ -1,0 +1,90 @@
+'
+' Dil  : Visual Basic
+' Amaç : Sbsmodul deki COM objesi Sokak bilgi sisteminde
+'        iki nokta arasindaki En Kisayolu bulmak.
+' p.s. : Bu Islemden once SBS Server hazir olmali (Baglatida Kurulmali)
+
+Sub Main
+
+ dim Sbs
+ dim c1, c2, cn, P, i, o, snapc
+ dim CY, CX, s
+ dim MARKNO
+
+  set Sbs = createobject("SbsMod.SbsCOM")
+
+  Sbs.StartKisaYolBul      ' Kisayol bulma islemlerini baslat
+
+  with Netcad
+    set c1 = .newc(0,0,0)    ' Gecici nokta yarat
+    set c2 = .newc(0,0,0)    ' Gecici nokta yarat
+    set P = .NewPoly         ' Sonucu tutmak icin poly objesi yarat
+    while .SelectPoint("Baþlangýç Noktasýný Seç",c1,-1)
+       if .SelectPoint("Bitiþ Noktasýný Seç",c2,-1) then
+
+          ' Simdi Kisayol buldur
+          if Sbs.KisayolBul(C1.Y, C1.X, C2.Y, C2.X) then
+
+             ' sonuclar Sbs objesinde duruyor.
+             ' once sonuc Cokludogrunun noktalari alalim
+             P.Clear
+             for i = 0 to Sbs.PolyNum-1  ' sonuc yol noktasi sayisi
+               CY = Sbs.GetPolyCY(i)
+               CX = Sbs.GetPolyCX(i)
+               set cn = .newc(CY,CX,0)
+               P.AddCoor(cn)                 ' P ye ekle
+             next
+             ' bulunan yola zoom edelim
+             P.CalcLimits
+             P.Limits.cll.y = P.Limits.cll.y - 20  ' 20 metre kadar sinirlari buyutelim
+             P.Limits.cll.x = P.Limits.cll.x - 20  ' 20 metre kadar sinirlari buyutelim
+             P.Limits.cur.y = P.Limits.cur.y + 20  ' 20 metre kadar sinirlari buyutelim
+             P.Limits.cur.x = P.Limits.cur.x + 20  ' 20 metre kadar sinirlari buyutelim
+             .SetCurrentWindow P.Limits, true
+
+             ' simdi sonuc P yi Cokludogru olarak Projeye ekle
+             set o= .MakePline("KISAYOL", 0, 0, 0, 0, 0, P)  ' 0. tabakaya ekle
+             o.renk =  Red                                   ' rengi kirmizi
+             .AddObject(o)
+             set o= nothing
+
+             ' Simdide Adres bilgilerini Alalim
+             ' Place Komutu ile aldigimiz Adres satirlarini Kullaniciya
+             ' Ekrandan yer sectirip oraya tasitacaz.
+             ' Bunun icin Netcad objelerinin sonunu simdiden saklamamiz gerek
+
+             if Sbs.AdresNum > 0 then
+
+               MARKNO = .NumObject
+
+               ' Simdi Sbs nin buldugu son adres satirlarini isteyelim
+
+               set cn = .newc(0,0,0)        ' adres yazdirmak icin gecici baslangic
+               for i = 0 to Sbs.AdresNum-1  ' sonuc adres bilgisi sayisi
+                 s = Sbs.GetAdresStr(i)    ' i.ci adres satirini al
+                 set o = .MakeText(cn, s, 0, 0, 2, 0, "L", 0)
+                 .AddObject(o)
+                 set o= nothing
+                 cn.x = cn.x - 2*1.5      ' bir alt satira git
+               next
+
+               set snapc = .newc(0,0,0)
+
+               .Place "Yazýlar için Yer gösterin", snapc, MARKNO
+             end if  ' adres bilgisi var
+
+          end if
+
+       end if                ' of bitis sec
+    wend                     ' of baslangic sec
+
+    set c1 = nothing         ' Gecici noktayi yok et.
+    set c2 = nothing         ' Gecici noktayi yok et.
+    set P = nothing
+  end with
+
+  Sbs.StopKisaYolBul       ' Kisayol bulma islemlerini bitir
+
+  set Sbs = nothing
+end sub
+

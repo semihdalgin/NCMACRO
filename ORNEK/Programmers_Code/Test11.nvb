@@ -1,0 +1,15 @@
+'
+' Dil  : Visual Basic
+' Amac : Kapali Alan Secmek
+'
+Sub Main
+Dim p
+  with Netcad
+    set p = .NewPoly      ' noktalari tutmak icin poly objesi yarat
+    if .GetPolygon("Kapalý Alan Seç",p) then  ' bunun icini doldur
+      msgbox "Nokta Sayýsý = " & p.num        ' nokta sayisini goster, veya bu alani kullan
+    end if
+    set p = nothing
+  end with
+End Sub
+

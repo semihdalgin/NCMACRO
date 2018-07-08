@@ -1,0 +1,32 @@
+'
+' Dil  : Visual Basic
+' Amaç : 1- Bir alt procedure cagrilmasi
+'        2- Projedeki coklu dogrularin verilen mesafe kadar kaydirilmasi
+'
+Sub MovePoly (MoveDistY, MoveDistX)
+Dim i,j,o,p
+   with Netcad
+      for i = 0 to .numobject-1       ' projedeki tum objeleri sirayla tara
+        set o = .getobject(i)         ' i. objeyi al
+        if o.tag = opline then        ' Coklu dogrumu ?
+          .drawobject o, Black        ' objeyi silinmis gibi siyahla ciz
+          set p = .getplineext(o)     ' objenin noktalarini tutan pline yapisini al
+          for j = 0 to p.num-1        ' coklu dogrunun herbir noktasi icin
+            p.cor(j).y = p.cor(j).y + MoveDistY     ' j. noktayi kaydir
+            p.cor(j).x = p.cor(j).x + MoveDistX
+          next
+          .putplineext o,p            ' noktalari yenile
+          .putobject i,o              ' objeyi yenile
+          .drawobject o, Red          ' objeyi kirmizi renkle ciz
+          set p = nothing             ' noktalar icin aldigimiz memory'i geri ver
+        end if
+        set o = nothing               ' obje icin aldigimiz memory'i geri ver
+      next
+   end with
+End Sub
+
+Sub Main
+  ' Program buradan basliyor.
+  ' Cokludogrulari 10 metre saga 10 metre sola kaydir
+  MovePoly 10,10
+End Sub

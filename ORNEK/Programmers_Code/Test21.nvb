@@ -1,0 +1,32 @@
+'
+'  Amac : Macro icersinden baska bir macro dosyasini calistirmak.
+'         Bunu yaparken macro dosyasina parametreler vermek
+'         Ve Onun degistirdigi veya yeni ekledigi parametrelere
+'         ulasmak.
+'
+Sub Main
+dim i
+
+  with Netcad
+    'set params = .NewParameter   ' parametreleri tutacak obje yarat
+
+    NCparam.SetValue "AA", "X111"  ' parametreler ekle
+    NCparam.SetValue "BB", "X222"
+
+    ' Macro dosyasini verilen parametreler ile calistir
+    if .RunMacroFile(netcad.getparam(PNC_MODULDIR)+"ncmacro\ornek\test22.nvb") then
+      ' Macro calistiktan sonra
+      ' Sonuclari ister tek tek oku
+      msgbox "AA=" & NCparam.GetValue("AA")
+      msgbox "BB=" & NCparam.GetValue("BB")
+      msgbox "CC=" & NCparam.GetValue("CC")
+
+      ' Istersen sirayla KEY=VALUE seklinde oku
+      for i = 0 to NCparam.NumParam-1
+        msgbox "KEY AND VALUES =  " & NCparam.GetKeyAndValue(i)
+      next
+    end if
+
+    'set params = nothing
+  end with
+End Sub

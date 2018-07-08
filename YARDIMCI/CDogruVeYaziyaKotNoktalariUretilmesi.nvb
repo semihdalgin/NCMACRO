@@ -1,0 +1,77 @@
+
+' Amaç : Çoklu doðru kotlarýnýn üçgenleme öncesi seyreltilmesi
+'        ve yazýlara kot noktalarý üretilmesi.
+'Girdi : Çokludogru - Egriler
+'        Text - Yer kotu
+'Uyarý : Ekranda Sadece bu objeleri açýk býrakýn
+
+
+'---------------------------- Coklu dogru sadelestirerek nokta uretir --------------------------
+Sub CDogruSadelestir
+Dim AtlamaSay, Point ,EgriKotAdim
+Dim i,j,o,p
+EgriKotAdim=50
+AtlamaSay=10
+
+with Netcad
+  .SetFilter nothing, AcikTabakalar,array(opline)          'Filitre uygula
+  Do
+    set o = .GetNextObject   ' Yukardaki Kurala uyan bir sonraki objeyi getir
+    if o is nothing then     ' Eger kurala uyan obje kalmadiysa sonuc "nothing" doner
+      exit do                ' Bu durumda donguyu durdur
+     else
+       set p = .getplineext(o)     ' objenin noktalarini tutan pline yapisini al
+       if (p.cor(0).z mod EgriKotAdim )=0 then
+         .AddObject  .MakePoint(p.cor(1), "T", "TIN",.FoundLayer("TIN") )
+         .AddObject  .MakePoint(p.cor(p.num-2), "T", "TIN",.FoundLayer("TIN"))
+         for j = 1 to p.num-2        ' coklu dogrunun herbir noktasi icin
+           if (j mod AtlamaSay)=0 then .AddObject  .MakePoint(p.cor(j), "T","TIN" ,.FoundLayer("TIN"))
+         next
+         set p = nothing             ' noktalar icin aldigimiz memory'i geri ver
+       end if
+       set o = nothing               ' obje icin aldigimiz memory'i geri ver
+    end if
+  loop
+end with
+End Sub
+'-----------------------------------------------------------------------------------------------------------
+Sub KotYaziToNokta         ' Microstation dan gelen 123.12 kot yazýlarýnýn '.' sýna kot noktasý atar.
+Dim AtlamaSay, Point
+Dim i,j,o,p
+
+with Netcad
+  .SetFilter nothing, AcikTabakalar,array(otext)          'Filitre uygula
+  Do
+    set o = .GetNextObject   ' Yukardaki Kurala uyan bir sonraki objeyi getir
+    if o is nothing then     ' Eger kurala uyan obje kalmadiysa sonuc "nothing" doner
+      exit do                ' Bu durumda donguyu durdur
+     else
+       if o.s="." then .AddObject .MakePoint(o.p1, "T","TIN" ,.FoundLayer("TIN"))
+       set o = nothing               ' obje icin aldigimiz memory'i geri ver
+    end if
+  loop
+end with
+End Sub
+'----------------------------------------------------------------------------------------
+Function AcikTabakalar
+Dim i
+Dim t()
+  With netcad
+    ReDim t(.NumLayers)
+    For i=0 to .NumLayers-1        't() ye tabakalarý doldur
+      if .IsLayerOpen(i) then t(i)=i else t(i)=-1
+    Next
+    AcikTabakalar=t
+  End with
+End Function
+
+
+Sub Main
+  With netcad
+    msgbox "TIN isimli bir tabaka açýn.     "
+    msgbox "Sadece kotu üretilecek tabakalarý açýk býkarýn.     "
+    .CreateLayer "TTT", 11
+    KotYaziToNokta
+    CDogruSadelestir
+  End With
+End Sub

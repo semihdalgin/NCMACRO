@@ -1,0 +1,32 @@
+//
+// Dil : Java
+// Netcad deki tum objelere sira ile git ve cokludogru ise
+// verilen y,x miktari kadar yerini degistir
+//
+
+function MovePoly (MoveDistY, MoveDistX) {
+var i,j,o,p;
+  with (Netcad) {
+      for (i = 0; i < numobject(); i++) {
+        o = getobject(i);
+        if (o.tag == _pline) {
+          drawobject(o, Black);
+          p = getplineext(o);
+          for (j = 0; j < p.num; j++) {
+            p.cor(j).y = p.cor(j).y + MoveDistY;
+            p.cor(j).x = p.cor(j).x + MoveDistX;
+          }
+          putplineext(o,p);
+          putobject(i,o);
+          drawobject(o, Red);
+          p = null;
+        }
+        o = null;
+      }
+  }
+}
+
+function Main() {
+  MovePoly(10,10);    // program buradan basliyor.
+}
+

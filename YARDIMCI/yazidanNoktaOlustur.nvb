@@ -1,0 +1,120 @@
+sub main
+dim o,oo,i,j,dlg,txtLy,pntLy,foo,c
+dim aOddLyFilter,npLayer,check
+  with netcad
+    set o = .newobject
+    set oo = .newpoly
+    set foo = .newobject
+    set dlg = .newBDialog("Yazýdan Nokta Oluþtur")
+
+    dlg.GetCombo "lList", "Yazý Tabaka", getLayerList, 0
+    dlg.getString "nLayer","Nokta Tabakasý","NOKTA",50
+    dlg.GetCheck "checkProb", "Alan Ýçindemi ?", 1
+    dlg.getString "aOddLyFilter","Kontrol için tabaka filtresi ","YAPI",10
+    dlg.getString "npLayer","Problemli Nokta Tabakasý","NOKTA_SORUNLU",50
+
+    if dlg.showModal then
+      txtLy = dlg.valueByName("lList")
+      pntLy = dlg.valueByName("nLAyer")
+      aOddLyFilter = dlg.ValueByName("aOddLyFilter")
+      npLayer= dlg.ValueByName("npLayer")
+      check = dlg.ValueByName("checkProb")
+
+      .createLayer pntLy,red
+      .createLayer npLayer, cyan
+
+      if txtLy <> "" and pntLy <> "" then
+        .setFilter nothing,array(txtLy),array(otext)
+        while .getNextObject2(o)
+          set c = getCenter(o.limits.cll,o.limits.cur)
+          set foo = .MakePoint(c,o.s,o.s,.foundLAyer(pntLy))
+          foo.pname = o.s
+          .addObject foo
+        wend
+        .resetFilter
+      else
+        msgBox "Nokta veya Yazý tabakasý Yok !!!"
+        exit sub
+      end if
+
+      if check = 1 then
+         checkIfInside aOddLyFilter,pntLy,npLayer
+      end if
+    end if
+  end with
+end sub
+
+function getLayerList
+dim i, s
+  with ncLayerManager
+    for i = 0 to .numLayer-1
+      if i = 0 then
+        s = .layer(i).Name
+      else
+        s = s & "|" & .layer(i).Name
+      end if
+    next
+    getLayerList = s
+  end with
+end function
+
+function getCenter(p1,p2)
+  with netcad
+   set getCenter = .newC((p1.y+p2.y)/2,(p1.x+p2.x)/2,(p1.z+p2.z)/2)
+  end with
+end function
+
+function checkIfInside(filter,pointLayer,pnPointLayer)
+dim o,oo,i,j,foo,arrList
+  with netcad
+
+    foo = .createLayer("foo",red)
+    set o =  .newobject
+    set oo =  .newobject
+    arrList = createLayerList(filter)
+    .setfilter nothing,arrList,array()
+    while .getNextObject2(o)
+      .drawObject o,red
+      .setFilter o.Limits,array(.foundLayer(pointLayer)),array(opoint)
+      while .getNextObject2(oo)
+        'msgbox "geldi"
+        if o.inObject(oo.p1) then
+          oo.Tabaka = foo
+          .putObject .curobjPos,oo
+        end if
+      wend
+      .resetFilter
+    wend
+    .resetfilter
+
+    .setFilter nothing,array(.foundLayer(pointLayer)),array(opoint)
+    while .getNextOBject2(o)
+      o.Tabaka = .foundLAyer(pnPointLayer)
+      .putObject .curobjpos,o
+    wend
+    .resetFilter
+
+    .setFilter nothing,array(foo),array(opoint)
+    while .getNextOBject2(o)
+      o.Tabaka = .foundLAyer(pointLayer)
+      .putObject .curobjpos,o
+    wend
+    .resetFilter
+    ncLayerManager.Delete foo, true
+  end with
+end function
+
+function createLayerList(filter)
+dim arr,i,foo
+  redim arr(0)
+  with netcad
+    for i = 0 to .NumLayers
+      if (inStr(.layerNameOf(i),filter) = 1) and (inStr(.layerNameOf(i),"@") = 0) then
+        redim preserve arr(ubound(arr)+1)
+         ' msgbox .layerNameOf(i)
+          arr(ubound(arr)) = i
+      end if
+    next
+    createLayerList = arr
+  end with
+end function

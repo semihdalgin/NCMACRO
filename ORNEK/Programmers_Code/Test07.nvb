@@ -1,0 +1,20 @@
+'
+' Dil  : Visual Basic
+' Amaç : Objeleri Tek Tek secmek.
+'        NewSelectStatus, SelectObjectInstant kullanimi
+'
+Sub Main
+Dim ss,o
+  with netcad
+    set ss = .NewSelectStatus   ' Anlik Secim objesi yarat
+    while .SelectObjectInstant("Dogru objesi Seç",1,array(oline),ss)  'Dogru objesi sec
+      set o = ss.objects(0)         ' Secim objesinin ilk objesini al
+      o.renk = yellow               ' rengini sari yap
+      .PutObject ss.indexs(0), o    ' objeyi geri koy
+      .DrawObject o,-1  ' kendi rengi ile ciz
+      set o = nothing
+    wend
+    set ss = nothing
+  end with
+end sub
+

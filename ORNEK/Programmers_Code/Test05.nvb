@@ -1,0 +1,22 @@
+'
+' Dil  : Visual Basic
+' Amaç : Ekranda Baslangici Ayni olan Cizgiler Yurutmek ve
+'        Bunlari Projeye Eklemek.
+'        Not : WalkLine, MakeLine, AddObject kullanim ornegi.
+Sub Main
+Dim c1,c2,o
+  with Netcad
+    set c1 = .newc(0,0,0)   ' iki tane gecici nokta yarat
+    set c2 = .newc(0,0,0)
+    if .SelectPoint("Baþlangýç Noktasý seç",c1,-1) then     ' Baslangici sectir
+      while .WalkLine("2. Noktayý seç", c2,-1,c1)  ' Cizgileri bu baslangica gore yurut
+        set o= .MakeLine(c1,c2,0,0,0)           ' her bir secilen c2 icin Cizgi objesi yarat
+        .AddObject(o)                           ' ve projeye ekle
+        set o= nothing                          ' gecici objeyi hafizadan sil
+      wend
+    end if
+    set c2 = nothing        ' gecici noktalari sil
+    set c1 = nothing
+  end with
+end sub
+

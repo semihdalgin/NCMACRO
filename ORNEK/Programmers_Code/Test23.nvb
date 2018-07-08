@@ -1,0 +1,16 @@
+'
+'  Amac : Netcad Aktif Proje Window.unun bir kismini imaj olarak
+'         bir dosyaya saklamak.
+'
+
+Sub Main
+dim w,h
+  with Netcad
+    w = .CurrentWinWdPixel
+    h = .CurrentWinHtPixel
+    if .SaveCurWinImage(w/2-75, w/2+75, h/2-50, h/2+50, IMAGE_JPG, _
+       "C:\TEST.JPG", 95) then
+      msgbox "Saklandi"
+    end if
+  end with
+End Sub

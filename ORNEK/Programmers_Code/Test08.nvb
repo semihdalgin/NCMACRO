@@ -1,0 +1,22 @@
+'
+' Dil  : Visual Basic
+' Amaç : Secim Kumesi olusturma
+'
+Sub Main
+Dim i,j,o,SEL
+  with Netcad
+    set SEL = .NewSelectionSet   ' Yeni kume yarat
+    set o = .NewObject
+    if SEL.SELECT("Dogru ve CokDogru Objelerini Seç",array(opline,oline)) then  ' istenen turleri kumeye ekle
+      for i = 0 to SEL.NE-1                ' kumenin her bir elemani icin
+        j = SEL.GetSelectedObject(i, o)    ' objeyi ve gercek indeksini al
+        o.renk = yellow                    ' rengini sari yap
+        .putobject j, o                    ' objeyi geri koy
+      next
+      SEL.RedrawAndRewind                  ' secim kumesini toplu kendi renginde
+    end if                                 ' cizdir ve kumeyi basa sardir.
+    set SEL = nothing
+    set o = nothing
+  end with
+end sub
+

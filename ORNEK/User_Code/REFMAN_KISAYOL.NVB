@@ -1,0 +1,92 @@
+
+' Amaç : Projedeki Referanslardan Kisayol Destekleyenleri Bulur
+'        Ekrandan gösterilen iki nokta arasýndaki en kýsa yolu bulur
+'        Kisayol Bulma sirasinda Filitre uygular, En az 10 m genisligindeki yollardan
+'        gecebilir. Ayrica yol cinslerini ve agirliklarinida belirler.
+'        Bulunan sonucu Obje olarak Netcade ekler. Ayrica Adreside Gosterir.
+' Yazan: Kamran Özcan 
+' Tarih: 16.09.2004
+
+sub main
+dim dlg,refList,roadWidth,index,usefilter
+  with netcad
+    set dlg = .newbdialog("EN KISAYOL SORGUSU")
+    reflist = makeSupRefListforDialog()
+    if reflist <> -1 then
+      dlg.getCombo "refList","Kýsa Yol için Referans",reflist,1
+      dlg.GetFloat "roadWd","Minimum Yol Geniþliði","10",2
+      dlg.GetCheck "filter", "Filtre Kullan", 0
+      if dlg.showmodal then
+        if dlg.valuebyname("refList") <> 0 then
+          index = dlg.valuebyname("refList")
+          roadWidth = dlg.valuebyname("roadWd")
+          usefilter = dlg.valuebyname("filter")
+          findShortest index-1,UseFilter,roadWidth
+        else
+          msgbox "Lütfen Geçerli Bir Referans Seçiniz !!!"
+          exit sub
+        end if
+      end if
+    else
+      msgbox "Projede En Kýsayol Sorgulamasý Destekleyen Bir Referans Bulunamamýþtýr !!!"
+    end if
+  end with
+end sub
+
+Sub findShortest(index,UseFilter,roadWidth)
+dim Reflist,i,SP,c1,c2,Adres,o,Filter
+
+  ' Bunlardan ilki uzerinde kisayol bul
+    RefList = NCRefman.GetSupportedReferences(Macro_Support_ShortestPath, TRUE)
+    set SP = RefList(index).ShortestPath  ' Referanstan Kisayol nesnesi iste
+
+    set c1 = Netcad.Newc(0, 0, 0)
+    set c2 = Netcad.Newc(0, 0, 0)
+    if Netcad.SelectPoint("Kýsayol için Baþlangýç noktasý göster", c1, -1) and _
+       Netcad.SelectPoint("Kýsayol için Bitiþ noktasý göster", c2, -1) then
+
+      ' Yollara Filitre uygula (Genislik ve Yol cinsleri)
+      ' Ancak Bu Filitrelerin uygulanmasi icin Referansin
+      ' Network ozelliklerinde Yol Cinsi ve Genislik Kolonlarinin
+      ' secilmis olmasi gerekir.
+      if useFilter = 1 then ' Kullanýcý Filtre isteði denetleniyor.
+        set Filter = Netcad.NewNetworkFilter
+        Filter.SetRoadWidth roadWidth      ' Yollar En Az 10 m genislikte olmali
+        Filter.AddRoadKind "SOKAK", 2.0
+        Filter.AddRoadKind "CADDE", 1.0
+        Filter.AddRoadKind "BULVAR", 0.4
+        SP.SetFilter Filter  ' Hazirlanan Filitreyi uygula
+      end if
+      if SP.FindShortestPath(c1, c2) then
+        ' Yol Degerini goster
+        msgbox "Kýsayol Yol Deðeri = " & SP.Cost
+
+        ' Bulunan kisayolu obje olarak projeye ekle
+        set o = Netcad.MakePline("KISAYOL", 0, 0, 0,0, 0, SP.Poly)
+        o.renk = red
+        Netcad.drawobject o,red
+
+        ' Adres Tarifini goster
+        Adres = SP.Address
+        for i = 0 to UBound(Adres)
+          msgbox Adres(i)
+        next
+      else
+          msgbox "Kýsayol bulunamadý !"
+      end if
+    end if
+End Sub
+
+function makeSupRefListforDialog()
+dim RefList,i,tmpStr
+  RefList = NCRefman.GetSupportedReferences(Macro_Support_ShortestPath, TRUE)
+  if ubound(reflist) <> -1 then
+    for i = 0 to UBound(RefList)
+      tmpStr = split(RefList(i).DisplayName,".")
+      makeSupRefListforDialog = makeSupRefListforDialog & "|" & tmpStr(ubound(tmpstr))
+    next
+  else
+    makeSupRefListforDialog = -1
+  end if
+end function
+

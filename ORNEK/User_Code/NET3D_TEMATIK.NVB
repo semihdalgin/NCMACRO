@@ -1,0 +1,176 @@
+' BG 07.01.2005 - Deðiþkenler için Dialoglar Eklendi - Projedeki sýnýflarý bulup getiren combo
+'                 Kalýnlýk için kalýnlýk sabiti ve referans kolon deðeri eklendi.
+' KO 15.02.2005 - Duzeltmeler yapildi
+
+dim simplify,relColName,thConst
+
+Sub Main
+dim sinif,fileName
+dim dlg,FCList,FCArr
+
+  Netcad3d.CloseNet3D 'calisirken bize engel olmasin, sonra acariz..
+
+  with netcad
+    FCList = findFClassList()
+    FCArr = Split(FCList,"|")
+    if ubound(FCArr) <> -1 then
+     set dlg = .newbDialog("3D THEMATIC YAP")
+     dlg.GetCombo "sinif", "Sýnýf", FCList , 0
+     dlg.GetFileName "fileName", "Dosya Adý", "", "N3D Dosyalarý|*.N3D|Tum Dosyalar|*.*","N3D"
+     if dlg.showmodal then
+       Sinif = FCArr(dlg.valueByName("sinif"))
+
+       if dlg.valueByName("fileName") = "" then
+         msgbox "DOSYA SEÇMEDÝNÝZ !!!"
+         exit sub
+       else
+         FileName = dlg.valueByName("fileName")
+       end if
+
+       if GetColName(sinif) = 0 then
+         exit sub
+       end if
+
+       make3dThematic sinif,FileName,simplify,relColName,thConst
+     end if
+     set dlg = nothing
+    else
+       msgbox "Projede Sýnýf Bulunamamýþtýr. Lütfen Açýklamayý Okuyunuz !!!"
+    end if
+    .NetcadCommand "REGEN"
+  end with
+end sub
+
+Sub make3dThematic(sinif,FileName,BASITLESTIRME,relColName,thConst)
+dim DS,a,dsw,N3DFILE, o,p,RefName
+dim REF, Lejand, Layer
+dim mesafe, YAKINMESAFE, UZAKMESAFE
+dim po,filter,dlg
+  with Netcad
+   set DS = NCConman.FindDatasetByFC(False, Sinif)
+   if DS is nothing then
+     msgbox "Projede " & Sinif & " adlý bir sýnýf yok !"
+     Exit Sub
+   end if
+   RefName = DS.AliasName & "." & DS.TableName & ".NCSPATIAL"
+   set REF = NCRefman.FindReference("", RefName)
+   set Lejand = REF.Lejand
+
+   Lejand.SetSource DS    ' Lejanda Kaynak olarak bu Dataseti ver.
+
+   ' Orginal Dataseti Sinifindan Bulur, yoksa uya
+   'netcad.NetcadCommand("REGEN")
+   set N3DFILE = Netcad3d.New3DFileCreator
+   'on error resume next
+   N3DFILE.CreateFile FileName
+   N3DFILE.AddLayer "0", blue
+   N3DFILE.WriteLayers
+       set p = .GetWorld.GetAsPline
+       set Filter = .NewDatasetFilter
+       Filter.FilterType = NC_GISDS_Region
+       filter.poly = p
+       DS.SetFilter Filter   ' Filitreyi uygula
+
+       if DS.Open then
+        set dsw = DS.Limits(false)
+         mesafe = NCMath.Distance(dsw.cll, dsw.cur,false)
+         YAKINMESAFE   = mesafe / 100
+         UZAKMESAFE    = mesafe*3
+         DS.First
+         while not DS.EOF
+           DS.Geometry.Draw(magenta)
+           set o = DS.Geometry.o
+           set p = DS.Geometry.p
+           p.Simplify 0, BASITLESTIRME                  ' Poligonu Indirge
+           'msgbox relcolName
+           if relcolName <> -1 then
+             o.thicknes = DS.EvaluateMacro("$[#"&relColName&"]*"&thConst, 3)   ' Objeye Kalinlik ver
+           else
+             o.thicknes = thConst ' Relatif kolon yok ise varsayýlan kolonu ver
+           end if
+           set Layer = Lejand.GetLayer(o, p)            ' Bu objenin Tematikteki Tabaka bilgilerine ulas
+           o.renk = layer.color                         ' Ve Objeye Tematik rengini ver 0-255
+           N3DFILE.WriteObject o, p , magenta
+           a = a + 1
+           DS.Next
+         wend
+         DS.Close
+       end if
+       DS.ResetFilter    ' Filitreyi Kapat
+   end with
+   N3DFILE.CloseFile
+
+   ' Netcad-3d yi baslat
+   Netcad3d.ShowNet3D
+   Netcad3d.LoadFile FileName
+   Netcad3d.SetClipDistance YAKINMESAFE, UZAKMESAFE
+   set Filter = nothing
+   set po = nothing
+   set DS = nothing
+End Sub
+
+function findFClassList()
+dim i,j
+  with ncconman
+    findFClassList = ""
+    for i = 0 to .NumConnection-1
+       for j = 0 to .Connection(i).NumTables-1
+         if .Connection(i).table(j,false).isspatial then
+            if findFClassList = "" then
+              findFClassList =  .Connection(i).table(j,false).FCName
+            else
+              findFClassList = findFClassList & "|" & .Connection(i).table(j,false).FCName
+            end if
+         end if
+       next
+    next
+  end with
+end function
+
+function findKolonList(sinif)
+dim ds,i
+  findKolonList=""
+  set ds = ncconman.finddatasetbyFc(false,sinif)
+  if ds.open then
+    for i = 0 to ds.columnCount-1
+      if  i = 0 then
+        findKolonList = ds.columnByNo(i).name
+      else
+        findKolonList = findKolonList & "|" &  ds.columnByNo(i).name
+      end if
+    next
+  end if
+end function
+
+function GetColName(sinif)
+dim dlg, Kols, KolArr
+  with Netcad
+     GetColName = 0
+     Kols = "Kolon Seçin|" & findKolonList(sinif)  ' en basa null ekledim , yok anlaminda
+     KolArr = Split(Kols,"|")
+     set dlg = .newbDialog("OBJE KALINLIKLARI")
+     dlg.PutPrompt sinif & " Sýnýfý"
+     dlg.PutPrompt "Objelere Kalýnlýk vermek için Kolon Seçiniz ve Katsayýsý deðeri verin"
+     dlg.GetCombo "relCol", "Obje Kalýnlýklarý Kolonu", Kols, 0
+     dlg.GetFloat "thick", "Kalýnlýk Katsayýsý (m)", 10 , 2
+     dlg.GetFloat "simplify", "Obje Basitleþtirme (m)", 10, 2
+     if dlg.showmodal then
+       simplify = dlg.valueByName("simplify")
+
+       if dlg.valueByName("thick") = 0 then
+         thConst = 10
+       else
+         thConst = dlg.valueByName("thick")
+       end if
+
+       relColName = KolArr(dlg.valueByName("relCol"))
+       if dlg.valueByName("relCol")=0 then ' ilk kolon adi yok demek
+          relColName = -1
+       end if
+
+       GetColName = 1
+     end if
+     set dlg = nothing
+  end with
+end function
+

@@ -1,0 +1,32 @@
+' Ornek Raster Processing
+' Yazan: Kamran Ozcan, 22.09.2005 
+
+' - Bir Rasteri Netcade Yukler
+' - Gorunurluk Alanini koruyan bir Raster Islemciden gecirip GEOTIFF olarak saklar
+' - Rasteri Netcad den siler
+
+sub main
+dim g, p, keyword,input,output
+  with netcad
+
+    input  = "D:\Data\proje\raster\classified1.DRE"
+    output = "D:\Data\proje\raster\MYTEST.TIF"
+
+    NCRasterManager.AddRaster input
+    .FindWorld  ' ekranda gormek icin
+
+    set g =  NCRasterManager.GetRaster(0)  'Netcad e Tam yuklu rasterlardan alma ornegi
+    set p = .newRasterProcessor(RASTER_PROC_ROI)
+    keyword = p.GetInputKeyword(0)
+
+    if p.SetSource(keyword, g) then
+      if p.SaveToFile(output, IMAGE_TIF, true) then
+         msgbox "Dosya cevrimi basarili"
+       end if
+    end if
+
+    NCRasterManager.RemoveRaster input
+    Netcad.FindWorld  ' ekranda gormek icin
+  end with
+end sub
+

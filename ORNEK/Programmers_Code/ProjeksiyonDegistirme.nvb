@@ -1,0 +1,15 @@
+' Amac  : Aktif Projenin Projeksiyonunu ve Objelerini UTM6/36/WGS84 e cevirmek
+'         Ancak Bunun çalismasi için, Aktif Projenin mevcut bir projeksiyonu olmak zorunda.
+' Tarih : 02.08.2005
+' Yazan : Kamran Özcan
+
+Sub Main
+dim pc
+
+  set pc = Netcad.NewProjection
+  pc.ProjectionType = PR_UTM
+  pc.Zone = 36
+  pc.Datum = DATUM_WGS84
+  pc.SetToCurrentProject TRUE   ' Objeleride dönüþtürür
+  Netcad.FindWorld
+End Sub

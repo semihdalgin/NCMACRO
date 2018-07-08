@@ -1,0 +1,71 @@
+Sub Main
+Dim ss,o1,P1,o2,p2,w,o3, oi1
+  with netcad
+    set ss = .NewSelectStatus   ' Anlik Secim objesi yarat
+    set w = .newworld(0,0,0,0)
+    while .SelectObjectInstant("KAPALI objesi Seç",1,array(opline),ss)  'Dogru objesi sec
+      set o1 = ss.objects(0)         ' Secim objesinin ilk objesini al
+      set o2= .NewObject
+      set o3=.newobject
+          .drawobject o1, red        ' objeyi silinmis gibi siyahla ciz
+          oi1 = ss.Indexs(0)
+          msgbox  oi1
+          set p1 = .getplineext(o1)     ' objenin noktalarini tutan pline yapisini al
+           .SetFilter o1.limits, array(), array(opline)
+            while .GetNextObject2(o2)
+                  if (o2.tag = opline) and NOT(oi1 = .CurObjPos) then
+                    .drawobject o2, green        ' objeyi silinmis gibi siyahla ciz
+                    msgbox  oi1 & "  " &  .CurObjPos
+                    set p2 = .GetPlineExt(o2)
+                       if  (p1.inpoly(p2.cor(0))  AND NOT p1.inpoly(p2.cor(p2.num-1))) _
+                        OR (p1.inpoly(p2.cor(p2.num-1))  AND NOT p1.inpoly( p2.cor(0)))    then
+
+                         msgbox "Bir ucu icerde"
+
+                         if p1.inpoly(p2.cor(0)) then
+                           msgbox "ilk noktasi icerde"
+
+                           'w.BuildRegion p2.cor(p2.num-1), 0.501,0.501
+                           'msgbox w.cll.x
+                           'msgbox w.cur.x
+                           w.cll.x = p2.cor(p2.num-1).x - 1
+                           w.cll.y = p2.cor(p2.num-1).y - 1
+                           w.cur.x = p2.cor(p2.num-1).x + 1
+                           w.cur.y = p2.cor(p2.num-1).y + 1
+                           .setfilter  w,array(),array(oshape)
+                           while .getnextobject2(o3)
+                              msgbox o3.sembolno
+                              .drawobject o3,red
+                           wend
+                          .resetfilter
+                          '.SetCurrentWindow o3.limits, true
+                         else
+                           msgbox "son noktasi icerde"
+                        '   w.BuildRegion p2.cor(0), 0.501,0.501
+                           w.cll.x = p2.cor(0).x - 1
+                           w.cll.y = p2.cor(0).y - 1
+                           w.cur.x = p2.cor(0).x + 1
+                           w.cur.y = p2.cor(0).y + 1
+
+                           .setfilter  w,array(),array(oshape)
+                           while .getnextobject2(o3)
+                              msgbox o3.sembolno
+                              .drawobject o3,red
+                           wend
+                          .resetfilter
+
+                         end if
+                       end if
+                  end if
+           wend
+          .Resetfilter
+          '.PutObject ss.indexs(0), o1    ' objeyi geri koy
+          '.DrawObject o1,-1  ' kendi rengi ile ciz
+    wend
+        set o1 = nothing
+        set o2=nothing
+        set p2=nothing
+        set p1=nothing
+        set ss = nothing
+  end with
+end sub

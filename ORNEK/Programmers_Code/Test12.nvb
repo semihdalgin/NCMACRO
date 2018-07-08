@@ -1,0 +1,12 @@
+'
+' Dil  : Visual Basic
+' Amaç : Netcad Parametlerini degistirmek
+'
+Sub Main
+  with Netcad
+    .SetParam PNC_SNAPENDOF, 1          'Son Nokta yakala modunu ac
+    .SetParam PNC_MAXPOINTNUM, "P100"   'Max Nokta No.yu set et
+    msgbox .getparam(PNC_MAXPOINTNUM)   'Max Nokta No.yu ogren
+  end with
+End Sub
+

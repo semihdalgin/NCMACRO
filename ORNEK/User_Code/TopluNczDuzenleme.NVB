@@ -1,0 +1,149 @@
+'TARIH       : 30.09.2004
+'AMAÇ        : Ýstenilen bir klasörde bulunan dosyalarýn teker teker açýlýp,
+              'istenilen düzenlemelerin yapýlmasý ve dosyalarýn istenilen
+              'klasöre kayýt edilmesi.
+' HAZIRLAYAN : Barýþ Göral
+' NetCAD Ýstanbul Bölge Müdürlüðü
+sub main
+dim inPath,outPath,dlg,proj,datum,zone,cleanProj
+   inpath = openDirDialog("Girdi Dosyalarýnýn Bulunduðu Klasörü Seçiniz.")
+   outpath = openDirDialog("Düzenlenecek Dosyalarýn Saklanacaðý Klasörü Seçiniz.")
+   with netcad
+     set dlg = .newbdialog("TOPLU NCZ DÜZENLEME")
+     dlg.getString "inPath","Girdi Dosyalarý",inpath,255
+     dlg.getString "outPath","Çýktý Dosyalarý",outPath,255
+     dlg.getcheck  "setProj","Projeksiyon ve Datum Bilgileri",1
+     dlg.getCombo  "getProj","Projeksiyon",createProjList,0
+     dlg.getCombo  "getDatum","Datum",createDatumList,0
+     dlg.getString "zone","Dilim Orta Meridyeni","30",3
+     dlg.getcheck  "cleanProj","Proje Düzenle",1
+     if dlg.showmodal then
+       if dlg.valuebyname("inPath") <> "" then
+         inPath = dlg.valuebyname("inPath")
+         if dlg.valuebyname("outPath") <> "" then
+           outPath = dlg.valuebyname("outPath")
+           if dlg.valueByname("setProj") <> 0 or dlg.valuebyname("cleanProj") <> 0 then
+             if dlg.valuebyname("setProj") =1 then
+               proj = getProjection(dlg.valuebyname("getProj"))
+               datum = getDatum(dlg.valuebyname("getdatum "))
+               if dlg.valuebyname("zone") <> "" and isNumeric(dlg.valuebyname("zone"))   then
+                 zone  = dlg.valuebyname("zone")
+               else
+                 zone = 30
+               end if
+             else
+               proj = -1
+               datum = -1
+               zone = -1
+             end if
+             cleanProj = dlg.valuebyname("cleanProj")
+             EvalFiles inPath,Outpath,proj,datum,zone,cleanProj
+           else
+             msgbox "Herhangi bir düzenleme seçeneðini iþaretlemediniz !!!"
+             exit sub
+           end if
+         else
+           msgbox "Saklanacak Dosyalar için Yer Seçmediniz !!!"
+           exit sub
+         end if
+       else
+         msgbox "Girdi Dosyalarý için yer seçmediniz !!!"
+         exit sub
+       end if
+     end if
+   end with
+end sub
+
+function openDirDialog(title)
+dim shell,folder,filePath,fileRoot
+  Set shell = CreateObject("Shell.Application")
+  Set folder = shell.BrowseForFolder(&H0,title,&H0008,&H0011)
+  on error resume next
+  openDirDialog = folder.ParentFolder.ParseName(folder.title).Path&"\"
+  if err.number <> 0 then
+    fileRoot = mid(folder.items.item(0).path,1,3)
+    openDirDialog = fileRoot
+  end if
+  set shell  = nothing
+  set folder = nothing
+end function
+
+Sub EvalFiles(inPath,Outpath,projType,Datum,Zone,cleanProj)
+dim dir,fSo,Count,file,inFile
+dim ly,b,i
+
+  with netcad
+    set fSo = CreateObject("Scripting.FileSystemObject") 'Dosya Sistemi objesi oluþturulur.
+    set dir = fso.GetFolder(InPath)                      'Bu Objenin özelliklerinden GetFolder
+                                                         'kullanýlarak klasör bir objeye atanýyor.
+    set Count = dir.Files                                'Klasördeki dosya listesi alýnýyor
+    for each file in Count
+      .Loadfile InPath&file.name,fs_bnetcad               'InPath Klasördeki dosya file.name isimli
+                                                          'dosyalar sýrayla yükleniyor. Yanda
+                                                          'LoadFile komutu ile yüklenecek dosya tipi
+                                                          'gönderiliyor.
+
+'     Aktif projeye projeksiyon atanmaktadýr.
+      if projType <> -1 then setProjection projType,datum,zone
+
+'     Tabaka degisimi buradan yapilmali // 
+        	
+'     Kullanýlmayan tabakalar, çizgi tipleri, yazý tipleri , semboller , bloklar,
+'     bilgilendirme menüsü görüntülenmeden silinmektedir.
+      if cleanProj = 1 then .NetcadCommand "PROJECT CLEAN 1,1,1,1,1,1"
+
+
+      inFile = split(file.name,".",-1,1)
+      .SaveToFile OutPath&inFile(0)&".ncz"                ' Yapýlan düzenleme iþleminden sonra açýlmýþ
+                                                          ' olan proje, Outpath sabitinde belirtilmiþ
+                                                          ' olan yere saklanýyor.
+
+      .NetcadCommand "CLOSE ACTIVEPROJECT"                ' Aktif Proje Kapatýlýyor
+      i = i + 1
+    Next
+    msgbox i & " Dosya Düzenlendi..."
+  end with
+end Sub
+
+sub setProjection(ProjType,Datum,Zone)
+dim nProj
+  with netcad
+    set nProj = .NewProjection           'Aktif dosyanýn projeksiyonunun belirlenmesi için
+    nProj.ProjectionType   = ProjType    'öncelikle bir projeksiyon nesnesi oluþturulmalýdýr.
+    nProj.Datum            = Datum       'Projeksiyon parametre deðerleri, kurulum dizininde, NCMACRO
+    nProj.Zone             = Zone        'klasörünün altýndaki NVBASIC dosyasýndan seçilmiþtir.
+    nProj.setToCurrentProject            'Oluþturulmuþ olan projeksiyon aktif projenin projeksiyonu 
+  end with                               'olarak set ediliyor.
+end sub
+
+function createProjList
+dim projList
+  projList = "Coðrafi"&"|"&"UTM 3 Derecelik"&"|"&"UTM 6 Derecelik"
+  createProjList = projList
+end function
+
+function getProjection(i)
+  if i = 0 then
+    getProjection = PR_GEO
+  elseif i= 1 then
+    getProjection = PR_UTM3
+  elseif i = 2 then
+    getProjection = PR_UTM
+  end if
+end function
+
+function createDatumList
+dim datumList
+  datumList = "ED50"&"|"&"WGS84"&"|"&"GRS80"
+  createDatumList = datumList
+end function
+
+function getDatum(i)
+  if i = 0 then
+    getDatum = DATUM_TUR_1
+  elseif i= 1 then
+    getDatum = DATUM_WGS84
+  elseif i = 2 then
+    getDatum = DATUM_GRS80
+  end if
+end function

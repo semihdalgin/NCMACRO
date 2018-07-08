@@ -1,0 +1,19 @@
+'
+' Dil  : Visual Basic
+' Amaç : Macro.RUN XML Servisi icin Ornek macro.
+'        
+'
+Sub Main
+Dim abc, o, w
+  with Netcad
+    abc = NCParam.GetValue("ABC")
+    set o= NCParam.GetValue("MYOBJECT")  ' nokta objesi
+    o.x = o.x + abc
+
+    set w = .NewWorld(o.y-100, o.x-100, o.y+100, o.x+100)
+
+    ' Sonuclari Doldur
+    NCParam.SetValue "KLM", o.x
+    NCParam.SetValue "OUTOBJECT", w
+  end with
+end sub

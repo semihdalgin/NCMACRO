@@ -1,0 +1,9 @@
+' Amac : Net3d yi baslatip, bir N3D dosyasi yuklemek
+' Yazan: Kamran Özcan 
+' Tarih: 16.09.2004
+
+sub main
+
+  Netcad3d.ShowNet3D
+  Netcad3d.LoadFile "D:\Data\proje\net3d\Lev0_4.n3d"
+end sub

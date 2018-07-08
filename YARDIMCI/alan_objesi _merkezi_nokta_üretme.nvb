@@ -1,0 +1,28 @@
+'Amaç : ALAN OBJELERÝ MERKEZÝNE ALAN TABAKASINDA NOKTA OBJESÝ ÜRETME
+'
+' Not  :
+' Yazan: Ercüment KORKMAZ
+' Tarih: 10.07.2006
+
+Sub main
+Dim i,j,o,p, nok, ss, gnok
+  ss =1
+   with Netcad
+     set nok = .Newc(0, 0, 0)
+      for i = 0 to .numobject-1
+        set o = .getobject(i)
+        if o.tag = opline then
+          .drawobject o, Black
+          set p = .getplineext(o)
+           set nok =    p.CenterOfMass
+           set gnok = .MakePoint(nok, ss, "code", o.Tabaka)
+           .AddObject gnok
+          set p = nothing
+        ss = ss+1
+        end if
+        set o = nothing
+      next
+   end with
+End Sub
+
+

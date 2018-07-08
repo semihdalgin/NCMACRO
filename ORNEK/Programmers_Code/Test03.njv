@@ -1,0 +1,20 @@
+//
+// Dil : Java
+// Obje secim Ornegi. Anlik obje secimi en fazla 5 objeyi gostermenizi ister
+//
+
+function Main() {
+var SS,o;
+  with (Netcad) {
+    SS = NewSelectStatus();
+    while (SelectObjectInstant('Doðru seç',1,MakeFilter(Array(_line,_pline)),SS)) {
+      o = SS.objects(0);
+      o.renk = Yellow;
+      PutObject(SS.indexs(0), o);
+      DrawObject(o,-1);
+      o = null;
+    }
+    SS = null;
+  }
+}
+

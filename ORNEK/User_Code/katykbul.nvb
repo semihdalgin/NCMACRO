@@ -1,0 +1,67 @@
+'Arazi kotu ile bina kotu karþýlaþtýrýlarak katyüksekliðinin bulunmasý
+sub main
+dim dlg
+  with netcad
+    set dlg = .newbdialog("ARAZÝ KOTU <> KAT YÜKSEKLÝÐÝ")
+    dlg.GetFileName "fileName", "Dosya Adý", "", "TXT Dosyalarý|*.TXT|Tum Dosyalar|*.*","TXT"
+    if dlg.showModal then
+      if dlg.valuebyname("fileName") <> "" then
+        writeValuesToFile dlg.valuebyname("fileName")
+      else
+        msgbox "Lürfen Verilerin Yazýlabileceði Bir Text Dosyasý Seçiniz !!!"
+        exit sub
+      end if
+    end if
+  end with
+end sub
+
+Sub writeValuesTofile(fname)
+Dim c,cc,i,j,k,z,z1,PL1,obj1,sel,tx,tx1,kat
+Const ForReading = 1, ForWriting = 2
+Dim fso, f
+Set fso = CreateObject("Scripting.FileSystemObject")
+Set f = fso.OpenTextFile(fname, ForWriting, True)
+f.WriteLine "BINA"&"   "&"ARAZI"&"  "&"FARK"&"  "&"KAT"
+
+with Netcad
+set SEL = .NewSelectionSet   ' Yeni kume yarat
+set c=.NewC(0,0,0)
+set obj1= .NewObject
+if SEL.SELECT("KAT BILGILERI YAZILACAK OBJELERI SECINIZ",array(opline)) then  ' istenen turleri kumeye ekle
+   for i = 0 to SEL.NE-1                ' kumenin her bir elemani icin
+       j = SEL.GetSelectedObject(i, obj1)    ' objeyi ve gercek indeksini al
+       set PL1=.GetPlineExt(obj1)
+       set c=PL1.CenterOfMass
+            z= .CalcZOf(c)
+           z1=0
+       for k = 0 to PL1.num-1 'Poly objesini oluþturam noktalarýn yüksekliklerini topla
+           z1=z1+PL1.cor(k).z
+       next
+       z1=z1/PL1.num   'Poly objesinin ortalama yüksekliðinin bulunmasý
+       kat=((z1-z)-0.6)/3 'poly objesinin ücgen modelden hesaplanan merkez kotu ile poly objesinin ortalama kotunun farkýndan katyüksekliði
+       if (Int(kat)+0.5)>kat then
+          kat=Int(kat)
+          else
+          kat=Int(kat)+1
+       end if
+       if kat=0 then kat=1
+       f.WriteLine ROUND(z1,2)&"   "&ROUND(z,2)&"  "&ROUND((z1-z),2)&"  "&kat
+       set tx=.MakeText(c,kat,0,0,1,0,"M",0)
+       .addobject(tx)
+   next
+end if
+    set obj1=nothing
+    set PL1=nothing
+    set j = nothing
+    set c = nothing
+    set z=nothing
+    set z1=nothing
+  end with
+End Sub
+
+function openValuesFile(fileName)
+dim shell
+
+end function
+
+

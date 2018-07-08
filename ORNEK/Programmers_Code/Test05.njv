@@ -1,0 +1,22 @@
+//
+//  Dil : Java
+//  Netcad deki tum objeleri alan,tabaka ve obje filitresi ile tara
+//  bulduklarinin turlerini soyle
+//
+
+function Main() {
+var a,b,c,o;
+  with (Netcad) {
+    a =  NewWorld(0,0,0,0);    //all region
+    b =  MakeFilter(Array());  //all layers
+    c =  MakeFilter(Array(_point,_line,_pline,_shape));
+    SetFilter(a, b, c);
+    o = NewObject();
+    while (GetNextObject2(o)) {
+      Message(0,objectnames[o.tag], 'Obje indeks = ' + CurObjPos());
+    }
+    o = null;
+    ResetFilter();
+  }
+}
+

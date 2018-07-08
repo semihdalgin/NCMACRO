@@ -1,0 +1,27 @@
+'
+' Dil  : Visual Basic
+' Amaç : Kullanicidan bir dialog dolusu bilgi almak
+'        NewBDialog kullanim ornegi.
+Sub Main
+Dim BD
+  set BD = Netcad.NewBDialog("Hello Dialog")                 ' yeni dialog yarat
+  BD.PutPrompt  "Bu bir Açýklamadýr !"                       ' Aciklama Yazdir.
+  BD.GetInteger "item1","Bir Tam Sayi Girin", 1555           ' tam sayi iste. baslangic degeri 1555 olsun
+  BD.GetFloat   "item2","Bir Real Sayi Girin", 1555.334, 3   ' real sayi iste. baslangic degeri 1555.334 olsun
+  BD.GetString  "item3","Bir Yazi Girin", "Hello", 15        ' Yazi iste. en fazla 15 karakter olsun
+  BD.GetCheck   "item4","Bunu iþaretle", 1                        ' CheckBox iste. baslangicta secili olsun
+  BD.GetRadio   "item5","Birini Seç","Bir|Iki|Uc|Dort",2     ' Radio Elemanlar. Basta 2. eleman secili.
+  BD.GetCombo   "item6","Bunuda Seç","one|two|three|four",1  ' ComboBox iste. Basta 1. eleman secili.
+  BD.GetFileName "item7","Dosya Adi Gir","c:\my.bmp","Resim Dosyalari|*.bmp|Tum Dosyalar|*.*","bmp"  ' file filitresi ve default dosya uzantisi ver
+  if BD.showmodal then
+    MsgBox "item1 = " & BD.ValueByName("item1")      ' kullanicinin girdigi degerleri goster
+    MsgBox "item2 = " & BD.ValueByName("item2")
+    MsgBox "item3 = " & BD.ValueByName("item3")
+    MsgBox "item4 = " & BD.ValueByName("item4")
+    MsgBox "item5 = " & BD.ValueByName("item5")
+    MsgBox "item6 = " & BD.ValueByName("item6")
+    MsgBox "item7 = " & BD.ValueByName("item7")
+  end if
+  set BD = Nothing
+End sub
+

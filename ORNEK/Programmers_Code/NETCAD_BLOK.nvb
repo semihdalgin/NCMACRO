@@ -1,0 +1,43 @@
+
+' Yazan : Kamran Özcan
+' Tarih : 07.04.2005
+' Açýklama : Yeni Blok tanýmý oluþturan örnek
+
+const MY_BLOCKNAME = "MYBLOK"
+
+Sub Main
+Dim i, Col, o
+  with Netcad
+    ' Yaratacagimiz Blok Tanimi zaten varmi diye bakmaliyiz.
+    if not .IsBlockDefExists( MY_BLOCKNAME ) then
+      ' Blogun tanimini olusturan objeleri ekleyelim.
+      ' Cizgilerden bi ucgen yaratiyoruz
+      set Col =  .NewCollection
+
+      set o =  .MakeLine(.Newc(0,0,0), .Newc(20,20,0), 0, 0, 0)
+      Col.AddObject o, -1, nothing
+
+      set o =  .MakeLine(.Newc(20,20,0), .Newc(20,0,0), 0, 0, 0)
+      Col.AddObject o, -1, nothing
+
+      set o =  .MakeLine(.Newc(20,0,0), .Newc(0,0,0), 0, 0, 0)
+      Col.AddObject o, -1, nothing
+
+      ' *** Yeni Blok tanimini Netcade ekle. ***
+      .CreateNewBlock MY_BLOCKNAME, Col
+
+      set o = nothing
+      set Col = nothing
+    else
+      msgbox MY_BLOCKNAME & " Adli Blok Zaten var !"
+    end if
+
+    ' Simdi artik bloktan degisik boylarda netcade bi kac tane ekleyebiliriz..
+    set o = .MakeBlock(MY_BLOCKNAME, .Newc(100,200,0), 0,0, 1, 1, 0)
+    .AddObject o
+    set o = .MakeBlock(MY_BLOCKNAME, .Newc(200,200,0), 0,0, 2, 2, 0)
+    .AddObject o
+    set o = .MakeBlock(MY_BLOCKNAME, .Newc(300,200,0), 0,0, 3, 3, 0)
+    .AddObject o
+  end with
+End Sub

@@ -1,0 +1,390 @@
+//***************************************
+//*        Java Script Language         *
+//* Predefined Constants and Functions  *
+//*          Netcad For Windows         *
+//***************************************
+
+// Renkler
+var Black        = 0;
+var Blue         = 1;
+var Green        = 2;
+var Cyan         = 3;
+var Red          = 4;
+var Magenta      = 5;
+var Brown        = 6;
+var LightGray    = 7;
+var DarkGray     = 8;
+var LightBlue    = 9;
+var LightGreen   =10;
+var LightCyan    =11;
+var LightRed     =12;
+var LightMagenta =13;
+var Yellow       =14;
+var White        =15;
+
+//*** Global Object Tag Constants
+var  _deleted   =  0;
+var  _point     =  1;
+var  _line      =  2;
+var  _circle    =  3;
+var  _arc       =  4;
+var  _text      =  5;
+var  _shape     =  6;
+var  _pline     =  7;
+var  _spiral    =  8;
+var  _izohdr    =  9;
+var  _rectangle = 10;
+var  _stpafta   = 11;
+var  _triang    = 12;
+var  _block     = 13;
+var  _mark      = 14;
+
+//*** Object tag names
+
+var objectnames = new Array("SiLiNDi","NOKTA","DOÐRU","DAiRE","YAY","YAZI",
+                          "ÞEKiL","ÇDOGRU","SPÝRAL","EÐRÝ","KUTU","STPAFTA",
+                          "ÜÇGEN","BLOK","MARK");
+
+
+//*** Pline Modlari, flag parametresinde,
+//*** Istenenleri toplayarak kullanabilirsiniz
+var  POLYCLOSED =  1;   // kapali cokludogru
+var  POLYFILLED =  2;   // tarali
+var  POLYFIT1   =  4;   // Spline yumusat
+var  POLYARROW  =  8;   // Ok ciz
+var  POLYNAME   = 16;   // Adini goster
+var  POLYNOCON  = 32;
+var  POLYFIT    = 64;   // Noktadan gecen Yumusatma
+
+//*** Pline.Operation Modlarý
+var  polyintersect = 0;   // Kesiþimleri
+var  polysubtract  = 1;   // 1.den 2.yi çýkart
+var  polyunion     = 2;   // Birleþimleri
+
+//*** Message modes
+var  NCM_INFO    = 0;
+var  NCM_WARNING = 1;
+var  NCM_ERROR   = 2;
+var  NCM_NONE    = 3;
+
+//*** Cursorler
+var  cursordefault        = -1;
+var  cursorbox            =  1;
+var  cursorcross          =  2;
+var  cursorbcross         =  4;
+var  cursorfcross         =  8;
+var  cursorcrosswpoint    = 16;
+var  cursorintbox         = 32;
+var  cursornocross        = 64;
+var  cursornearest        = 128;
+
+var  cursorLargeSnap         	  = 8192;
+var  cursorOrtho        	  = 131072;
+
+
+//*** Undo modes
+var  undo         = 0;
+var  beginblock   = 1;
+var  endblock     = 2;
+var  beginadd     = 3;
+var  endadd       = 4;
+var  endbookkeep  = 5;
+var  initbookkeep = 6;
+var  clearundo    = 7;
+
+//*** FileTypes
+var  fs_none      = 0;
+var  fs_bnetcad   = 1;  // *.NCZ
+var  fs_netcad    = 2;  // *.PLT
+var  fs_autocad   = 3;  // *.DXF
+var  fs_microst   = 4;  // *.DGN, *.PLN
+var  fs_text      = 5;
+var  fs_nokta     = 6;  // *.NOK
+var  fs_pafta     = 7;
+var  fs_block     = 8;
+
+
+//*** Netcad.GetParam ve SetParam da kullanilir. (sonuc veya parametresi string)
+var  PNC_MAXPOINTNUM       =    3; //en buyuk nokta no
+var  PNC_MAXAREANUM        =    4; //en buyuk alan no
+var  PNC_DBASE             =   16;
+var  PNC_DBASELINKF        =   17;
+
+//*** Netcad.GetParam da kullanilir (sonuc string doner)
+var  PNC_PROGRAMNAME       =    5; //Netcad For Windows
+var  PNC_VERSION           =    6;
+var  PNC_VERSIONDATE       =    7;
+var  PNC_USERNAME          =    8;
+var  PNC_NETCADDIR         =    9; //netcad dir
+var  PNC_AUXDIR            =   10; //secme
+var  PNC_TEMPDIR           =   11; //temp
+var  PNC_FONTDIR           =   12; //fontlar
+var  PNC_SHAPEDIR          =   13; //semboller
+var  PNC_MODULDIR          =   14; //modul baslangic dir
+var  PNC_BMP3DDIR          =   15; //3d bitmaps here
+var  PNC_CURRENTFILE       =   34; //Current Project File Name
+
+//*** Netcad.GetParam da kullanilir (sonuc integer doner)
+var  PNC_CURFONTREF        =   38; //get current fontfile ref no
+var  PNC_CURSHAPEREF       =   39; //get current shapefile ref no
+var  PNC_DOM               =   49; //dilim orta meridyeni
+var  PNC_DOMSCALE          =   72; //dilim orta meridyeni olcegi 0 veya 1
+var  PNC_ZEROALL           =   86; //aktif projedeki tum objeleri ve tabakalari siler
+var  PNC_VPORTSCALE        =   87; //Current projenin cizim olcegi
+
+//*** Netcad.SetParam da kullanilir (parametresi integer)
+var  PNC_FASTIZO           =   21; //set/reset fast izolines 0-1
+var  PNC_FASTIZODELTA      =   22; //set fast izoline delta (m)
+var  PNC_PNTNAMES          =   25; //Nokta adlarinin ac kapa 0-1
+var  PNC_PNTZS             =   26; //Nokta kotlarini ac kapa 0-1
+var  PNC_PNTCODES          =   27; //Nokta kodlarini ac kapa 0-1
+var  PNC_PLINENAME         =   28; //Alan adlarinin ac kapa  0-1
+var  PNC_PLINEZS           =   29; //Alan kotlari ac kapa    0-1
+var  PNC_PLINEHATCHS       =   30; //Alan taramalari ac kapa 0-1
+var  PNC_BLASTRO           =   31; //Blastrolar acik kapali  0-1
+var  PNC_WIDTHS            =   32; //Kalin obje cizimi on off 0-1
+var  PNC_ARASTERMARK       =   33; //aktif raster isaretle 0-1
+var  PNC_RAWADD            =   37; //Row Add ac kapa 0-1
+var  PNC_SNAPNODEOF        =   41; //Asagidakiler Snap modlarini acar/kapar 1-0
+var  PNC_SNAPENDOF         =   42;
+var  PNC_SNAPINTOF         =   43;
+var  PNC_SNAPINSOF         =   44;
+var  PNC_SNAPMIDOF         =   45;
+var  PNC_SNAPGRID          =   46;
+var  PNC_SNAPORTHO         =   47;
+var  PNC_SNAPNEAREST	   =   85;
+var  PNC_SNAPGRIDSPACING   =   48; //grid araligini acar kapar-netcad icerisinde Ortho 0-1
+var  PNC_PNC_AUTOSAVETIME  =   84; //otomatik saklama zamanini set/get eder. 0 verirsen kapanir.
+var  PNC_0WPIXEL           =   88; //Obje cizim pixel kalinligini ayarlar
+
+//*** Netcad.XSetParam da kullanilir
+var  PNX_SHOWCMINSPECTORDLG = 0011; //no param, when set, next AddObjectDB opens a modal inspector dlg. After dlg, its reset. So set before every call.
+
+//*** Macro Sonuc Dosya Bilgilerini Okumak ve Yazmak icin Sabitler Degerler
+var  MACRO_SONUC_DOSYA_ADI   = "MACRO_SONUC_DOSYA_ADI";
+var  MACRO_SONUC_DOSYA_TIPI  = "MACRO_SONUC_DOSYA_TIPI";
+
+//*** Macro Sonuc Dosya tipleri
+var  MACRO_SONUC_DOSYA_JPEG  = "image/jpeg";
+var  MACRO_SONUC_DOSYA_HTML  = "text/html";
+
+//*** Netcad.SaveCurWinImage() komutundaki imagetype degerleri
+var  IMAGE_ECW   = "ECW";
+var  IMAGE_BMP   = "BMP";
+var  IMAGE_JPG   = "JPG";
+var  IMAGE_PNG   = "PNG";
+var  IMAGE_PCX   = "PCX";
+var  IMAGE_TIF   = "TIF";
+var  IMAGE_TIFG4 = "TIFG4";
+var  IMAGE_TGA   = "TGA";
+
+//***  GeoRaster ve RasterProcessor.SaveToFile() komutundaki Exparams degerleri
+var   RASTER_UNCOMP    = "UNCOMP$";   //uncompressed
+var   RASTER_PACKBITS  = "PACKBITS$"; //packbits
+var   RASTER_JPEG      = "JPEG$";     //JPEG
+var   RASTER_G4        = "G4$";       //G4
+var   RASTER_LOSSLESS  = "LOSSLESS$"; //Lossless Compression
+var   RASTER_COMPQNN   = "COMPQNN$";  //Comp Ratio
+var   RASTER_GEOTIFF   = "GEOTIFF$";  //geoTiff
+var   RASTER_TIFF      = "TIFF$";     //Tiff
+
+//*** ColumnMC.ColType degerleri
+var  CT_OTHER    = -1;
+var  CT_INTEGER  = 0;
+var  CT_FLOAT    = 1;
+var  CT_DATETIME = 2;
+var  CT_STRING   = 3;
+var  CT_BLOB     = 4;
+
+//*** NCDatasetFilter.FilterType degerleri
+var  NC_GISDS_Region              = 115;
+var  NC_GISDS_IncludePoint        = 116;
+var  NC_GISDS_JustSQL             = 117;
+var  NC_GISDS_Polygon             = 6;
+
+//*** NetcadGeometry.GeometryType degerleri
+var FC_Undef = 7;
+var FC_Point = 1;
+var FC_Line  = 2;
+var FC_Area  = 4;
+
+//*** NetcadReferenceMC.IsSupport() keyword degerleri
+var  Macro_Support_Grid         = "GRID";
+var  Macro_Support_FindZ        = "FINDZ";
+var  Macro_Support_ShortestPath = "SHORTEST";
+var  Macro_Support_Network      = "NETWORK";
+var  Macro_Support_Spatial      = "SPATIAL";
+var  Macro_Support_GeoRaster    = "GEORASTER";
+
+//*** Netcad.newRasterProcessor(const ProcName: WideString) Procname degerleri
+var RASTER_PROC_Median             = "MedianEx";
+var RASTER_PROC_Destripe           = "DestripeEx";
+var RASTER_PROC_PCA                = "PCAEx";
+var RASTER_PROC_BandDecomp         = "BandDecomposeEx";
+var RASTER_PROC_BandComp           = "BandComposeEx";
+var RASTER_PROC_LandsatCalib       = "LandsatCalibrationEx";
+var RASTER_PROC_BadPixel           = "BadPixelReplacementEx";
+var RASTER_PROC_Fusion             = "FusionEx";
+var RASTER_PROC_ReducePromoseColor = "ReducePromoteColorEx";
+var RASTER_PROC_ConvertToGrayScale = "Convert2GrayScaleEx";
+var RASTER_PROC_ColorSpace         = "ColorSpaceTransitionEx";
+var RASTER_PROC_RGBtoHSV           = "RGB2HSVEx";
+var RASTER_PROC_HSVtoRGB           = "HSV2RGBEx";
+var RASTER_PROC_RGBtoHLS           = "RGB2HLSEx";
+var RASTER_PROC_HLStoRGB           = "HLS2RGBEx";
+var RASTER_PROC_IHStoRGB           = "IHS2RGBEx";
+var RASTER_PROC_RGBtoIHS           = "RGB2IHSEx";
+var RASTER_PROC_RGBtoCMY           = "RGB2CMYEx";
+var RASTER_PROC_CMYtoRGB           = "CMY2RGBEx";
+var RASTER_PROC_RGBtoCMYK          = "RGB2CMYKEx";
+var RASTER_PROC_CMYKtoRGB          = "CMYK2RGBEx";
+var RASTER_PROC_Histogram          = "HistogramStrecthingEx";
+var RASTER_PROC_ContrastAdjust     = "ContrastAdjustmentEx";
+var RASTER_PROC_AntiAlias          = "AntiAliasingEx";
+var RASTER_PROC_Resize             = "ResizingImageEx";
+var RASTER_PROC_Rotation           = "RotationImageEx";
+var RASTER_PROC_INCTransform       = "INCTransformEx";
+var RASTER_PROC_Pipeline           = "ProcessorPipeLineEx";
+var RASTER_PROC_BandArithmetic     = "BandArithmeticEx";
+var RASTER_PROC_ROI                = "applyROIEx";
+
+//*** NetcadProjection.ProjectionType degerleri
+var PR_NONE                        = 0;  //        { Undefined }
+var PR_GEO                         = 1;  //        { Geographic }
+var PR_UTM                         = 2;  //        { Universal Transverse Mercator }
+var PR_UTM3                        = 3;  //        { Universal Transverse Mercator 3º Dilim}
+var PR_TM                          = 4;  //        { Transverse Mercator }
+var PR_LAMCC                       = 5;  //        { Lambert Conformal Conic }
+var PR_LAMAZ                       = 6;  //        { Lambert Azimuthal Equal Area }
+var PR_ALBERS                      = 7;  //        { Albers Conical Equal Area }
+var PR_MERCAT                      = 8;  //        { Mercator }
+var PR_STEREO                      = 9;  //        { Stereographic }
+var PR_AZMEQD                      =10;  //        { Azimuthal Equidistant }
+var PR_GNOMON                      =11;  //        { Gnomonic }
+var PR_ORTHO                       =12;  //        { Orthographic }
+var PR_PS                          =13;  //        { Polar Stereographic }
+var PR_POLYC                       =14;  //        { Polyconic }
+var PR_SNSOID                      =15;  //        { Sinusoidal }
+var PR_EQRECT                      =16;  //        { Equirectangular }
+var PR_MILLER                      =17;  //        { Miller Cylindrical }
+var PR_VGRINT                      =18;  //        { Van der Grinten }
+var PR_ROBIN                       =19;  //        { Robinson }
+
+//*** NetcadProjection.Datum degerleri
+var DATUM_KULTN = -1;      //Kullanýcý Tanýmlý
+var DATUM_WGS84 =  0;      //WGS-84
+var DATUM_GRS80 =  1;      //GRS80 Yönetmelik Ýçin Datum
+var DATUM_AUA   =  2;      //AUSTRALIAN GEODETIC 1966
+var DATUM_AUG   =  3;      //AUSTRALIAN GEODETIC 1984
+var DATUM_EUR_M =  4;      //EUROPEAN 1950, Mean (3 Param)
+var DATUM_EUR_A =  5;      //EUROPEAN 1950, Western Europe
+var DATUM_EUR_B =  6;      //EUROPEAN 1950, Greece
+var DATUM_EUR_C =  7;      //EUROPEAN 1950, Norway & Finland
+var DATUM_EUR_D =  8;      //EUROPEAN 1950, Portugal & Spain
+var DATUM_EUR_E =  9;      //EUROPEAN 1950, Cyprus
+var DATUM_EUR_F = 10;      //EUROPEAN 1950, Egypt
+var DATUM_EUR_G = 11;      //EUROPEAN 1950, England, Channel
+var DATUM_EUR_H = 12;      //EUROPEAN 1950, Iran
+var DATUM_EUR_I = 13;      //EUROPEAN 1950, Sardinia(Italy)
+var DATUM_EUR_J = 14;      //EUROPEAN 1950, Sicily(Italy)
+var DATUM_EUR_K = 15;      //EUROPEAN 1950, England, Ireland
+var DATUM_EUR_L = 16;      //EUROPEAN 1950, Malta
+var DATUM_EUR_S = 17;      //EUROPEAN 1950, Iraq, Israel
+var DATUM_EUR_T = 18;      //EUROPEAN 1950, Tunisia
+var DATUM_EUS   = 19;      //EUROPEAN 1979
+var DATUM_FAH   = 20;      //OMAN
+var DATUM_FLO   = 21;      //OBSERVATORIO MET. 1939, Flores
+var DATUM_FOT   = 22;      //FORT THOMAS 1955, Leeward Is.
+var DATUM_GAA   = 23;      //GAN 1970, Rep. of Maldives
+var DATUM_GEO   = 24;      //GEODETIC DATUM 1949, NZ
+var DATUM_GIZ   = 25;      //DOS 1968, Gizo Island
+var DATUM_GRA   = 26;      //GRACIOSA BASE SW 1948, Azores
+var DATUM_GUA   = 27;      //GUAM 1963
+var DATUM_GSE   = 28;      //GUNUNG SEGARA, Indonesia
+var DATUM_HEN   = 29;      //HERAT NORTH, Afghanistan
+var DATUM_HER   = 30;      //HERMANNSKOGEL, old Yugoslavia
+var DATUM_HIT   = 31;      //PROVISIONAL SOUTH CHILEAN 1963
+var DATUM_HJO   = 32;      //HJORSEY 1955, Iceland
+var DATUM_HKD   = 33;      //HONG KONG 1963
+var DATUM_HTN   = 34;      //HU-TZU-SHAN, Taiwan
+var DATUM_IBE   = 35;      //BELLEVUE (IGN), Efate Is.
+var DATUM_IDN   = 36;      //INDONESIAN 1974
+var DATUM_IND_B = 37;      //INDIAN, Bangladesh
+var DATUM_IND_I = 38;      //INDIAN, India & Nepal
+var DATUM_IND_P = 39;      //INDIAN, Pakistan
+var DATUM_INF_A = 40;      //INDIAN 1954, Thailand
+var DATUM_ING_A = 41;      //INDIAN 1960, Vietnam 16N
+var DATUM_ING_B = 42;      //INDIAN 1960, Con Son Island
+var DATUM_INH_A = 43;      //INDIAN 1975, Thailand
+var DATUM_INH_A1= 44;      //INDIAN 1975, Thailand
+var DATUM_IRL   = 45;      //IRELAND 1965
+var DATUM_ISG   = 46;      //ISTS 061 ASTRO 1968, S Georgia
+var DATUM_IST   = 47;      //ISTS 073 ASTRO 1969, Diego Garc
+var DATUM_JOH   = 48;      //JOHNSTON ISLAND 1961
+var DATUM_KAN   = 49;      //KANDAWALA, Sri Lanka
+var DATUM_KEG   = 50;      //KERGUELEN ISLAND 1949
+var DATUM_KEA   = 51;      //KERTAU 1948, W Malaysia & Sing.
+var DATUM_KUS   = 52;      //KUSAIE ASTRO 1951, Caroline Is.
+var DATUM_LCF   = 53;      //L.C. 5 ASTRO 1961, Cayman Brac
+var DATUM_LEH   = 54;      //LEIGON, Ghana
+var DATUM_LIB   = 55;      //LIBERIA 1964
+var DATUM_LUZ_A = 56;      //LUZON, Phillipines
+var DATUM_LUZ_B = 57;      //LUZON, Mindanao Island
+var DATUM_MAS   = 58;      //MASSAWA, Ethiopia
+var DATUM_MER   = 59;      //MERCHICH, Morocco
+var DATUM_MID   = 60;      //MIDWAY ASTRO 1961, Midway Is.
+var DATUM_MIK   = 61;      //MAHE 1971, Mahe Is.
+var DATUM_MIN_A = 62;      //MINNA, Cameroon
+var DATUM_MIN_B = 63;      //MINNA, Nigeria
+var DATUM_MOD   = 64;      //ROME 1940, Sardinia
+var DATUM_MPO   = 65;      //M"PORALOKO, Gabon
+var DATUM_MVS   = 66;      //VITI LEVU 1916, Viti Levu Is.
+var DATUM_NAH_A = 67;      //NAHRWAN, Masirah Island (Oman)
+var DATUM_NAH_B = 68;      //NAHRWAN, United Arab Emirates
+var DATUM_NAH_C = 69;      //NAHRWAN, Saudi Arabia
+var DATUM_NAP   = 70;      //NAPARIMA, Trinidad & Tobago
+var DATUM_NAR_A = 71;      //NORTH AMERICAN 1983, Alaska
+var DATUM_NAR_B = 72;      //NORTH AMERICAN 1983, Canada
+var DATUM_NAR_C = 73;      //NORTH AMERICAN 1983, CONUS
+var DATUM_NAR_D = 74;      //NORTH AMERICAN 1983, Mexico
+var DATUM_OGB_M = 75;      //ORDNANCE GB 1936, Mean (3 Para)
+var DATUM_OGB_A = 76;      //ORDNANCE GB 1936, England
+var DATUM_OGB_B = 77;      //ORDNANCE GB 1936, Eng., Wales
+var DATUM_OGB_C = 78;      //ORDNANCE GB 1936, Scotland
+var DATUM_OGB_D = 79;      //ORDNANCE GB 1936, Wales
+var DATUM_WGS72 = 80;      //WGS-72
+var DATUM_EUR_7 = 81;      //EUROPEAN 1950, Mean (7 Param)
+var DATUM_OGB_7 = 82;      //ORDNANCE GB 1936, Mean (7 Para)
+var DATUM_TUR_1 = 83;      //ED-50 TURKIYE (7 Param)
+
+
+function min(a,b)
+{
+  Min = a;
+  if (b < a) {
+    Min = b
+  }
+}
+
+function max(a,b)
+{
+  Max = a;
+  if (b > a) {
+    Max = b
+  }
+}
+
+function MakeFilter(a)
+// a = Array() cinsinden
+// Sonuc Netcad.SetFilter komutunda istenen tabaka ve obje
+// filterlari olarak doner
+{
+  with (Netcad) {
+    e = newenumset();
+    for (i = 0; i < a.length; i++)
+    {
+      e.add(a[i]);
+    }
+    return e.GetAsArray();
+  }
+}

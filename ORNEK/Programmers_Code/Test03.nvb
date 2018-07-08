@@ -1,0 +1,20 @@
+'
+' Dil  : Visual Basic
+' Amaç : SetFilter, ResetFilter, Newobject, GetNextObject2 nin kullanimi
+'
+Sub Main
+Dim o
+  with Netcad
+    ' Tum Proje alani, Tum Tabakalar ve (nokta,dogru,cokdogru,sekil)
+    ' Filitresi uygula.
+    .SetFilter nothing,array(),array(opoint,oline,opline,oshape)
+    set o = .Newobject           ' Gecici obje yarat
+    while .GetNextObject2(o)     ' Eger yukardaki kurala uyan obje varsa
+                                 ' onu bizim objenin icine getir
+      msgbox objectnames(o.tag)  ' gelen objenin turunu goster
+    wend
+    set o = nothing              ' Gecici objeyi hafizadan sil
+    .ResetFilter                 ' Filitre Uygulama.
+  end with
+End Sub
+

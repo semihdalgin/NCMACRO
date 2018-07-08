@@ -1,0 +1,29 @@
+' Amaç : Tabaka Yöneticisi Kullaným Örneði
+' Yazan : Kamran Özcan
+' Tarih : 21.09.2004
+Sub Main
+
+dim LayerNo, i
+
+  with NCLayerManager
+     ' Bir Kaç Yeni Tabaka Ekle
+     .Add "TABAKA1", yellow
+     .Add "TABAKA2", green
+     .Add "TABAKA3", blue
+
+     ' 1. Tabakayi Bul
+     LayerNo = .Find("TABAKA1")
+
+     ' Bunu Aktif tabaka Yap
+     .CurrentLayer = LayerNo
+
+     ' 2. Tabakanin rengini kirmizi yap
+     .Layer( .Find("TABAKA2") ).Color = red
+
+     ' 3. Tabakayi, objeleri ile birlikte Sil
+     .Delete .Find("TABAKA3"), TRUE
+
+     ' Projeyi Yeniden Ekrana Çiz
+     Netcad.NetcadCommand "REGEN"
+  end with
+End Sub

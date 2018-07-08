@@ -1,0 +1,63 @@
+
+' Amaç : Projedeki Referanslardan Grid Desteði olanlarý bulur
+'        ve Relief Shaded olarak (Gölgelendirilmiþ) JPEG formatýnda saklar
+' Yazan: Kamran Özcan 
+' Tarih: 30.09.2004
+'Eklenecekler : 
+'  Referans list komboya eklenecek, dosya adý ve path'i seçilecek.
+
+sub main
+dim dlg,refList
+dim index,fileName,xyAngle,zAngle
+  with netcad
+    reflist =  makeSupRefListforDialog
+    if reflist <> -1 then
+      set dlg = .newBDialog("GRID > RELIEF SHADED RESIM OLUÞTUR")
+      dlg.GetCombo "refIndex","Grid Referanslar",refList,1
+      dlg.GetFileName "fileName", "Resim Dosyasýnýn Adý", "", "JPG Dosyalarý|*.JPG|Tum Dosyalar|*.*","JPG"
+      dlg.GetFloat "xyAngle", "XY Yönündeki Açý", "45", 2
+      dlg.GetFloat "zAngle", "Z Yönündeki Açý", "45", 2
+      if dlg.showModal then
+        index = dlg.ValueByName("refIndex")
+        if dlg.ValueByName("fileName") = "" then
+          msgbox "Bir Dosya Adý ve yolu Seçmediniz"
+          exit sub
+        else
+          fileName = dlg.ValueByName("fileName")
+        end if
+        xyAngle = dlg.ValueByName("xyAngle")
+        zAngle = 45
+        MakeReliefShadedFile index-1,fileName,xyAngle,zAngle
+      end if
+    else
+      msgbox "Projede Grid Referans Bulunamamýþtýr !!!"
+    end if
+  end with
+end sub
+
+function MakeReliefShadedFile(index,fileName,xyAngle,zAngle)
+dim Reflist,i,Grid, Shade, BD
+    RefList = NCRefman.GetSupportedReferences(Macro_Support_Grid, TRUE)
+    set Grid = RefList(index).Grid  ' Referanstan Grid nesnesi iste
+    set Shade = Grid.GetReliefShading ' Gridten Gölgelendirme nesnesini iste
+    on error resume next
+    Shade.SetXYAngle xyAngle
+    on error resume next
+    Shade.SetZAngle zAngle
+    if Shade.SaveToFile(FileNAme, IMAGE_JPG, TRUE) then
+      msgbox "Raster Saklandý"
+    end if
+End function
+
+function makeSupRefListforDialog()
+dim RefList,i,tmpStr
+  RefList = NCRefman.GetSupportedReferences(Macro_Support_Grid, TRUE)
+  if ubound(reflist) <> -1 then
+    for i = 0 to UBound(RefList)
+      tmpStr = split(RefList(i).DisplayName,"\")
+      makeSupRefListforDialog = makeSupRefListforDialog & "|" & tmpStr(UBound(tmpStr))
+    next
+  else
+    makeSupRefListforDialog = -1
+  end if
+end function

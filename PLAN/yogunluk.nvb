@@ -1,0 +1,44 @@
+
+' Yazan :  ERCÜMENT KORKMAZ
+' Tarih : 19.03.2007
+' Açýklama : YOÐUNLUK HESABI
+
+Sub Main
+Dim i,j,o,SEL,tbk, alan,bd, n,k ,yog , p, y
+  with Netcad
+     alan = 0
+
+   set BD = Netcad.NewBDialog("Yoðunluk Hesapla...")
+
+  BD.GetInteger "item1","Nüfusu Giriniz ",15000
+  BD.Getfloat "item2","KAKS Giriniz ",1.25, 3
+   if BD.showmodal then
+    n = BD.ValueByName("item1")
+    k = BD.ValueByName("item2")
+  end if
+   set SEL = .NewSelectionSet
+    set o = .NewObject
+      tbk = .FoundLayer("PL_KONUT")
+    if SEL.SELECT("Dogru ve CokDogru Objelerini Seç",array(opline)) then
+      for i = 0 to SEL.NE-1
+        j = SEL.GetSelectedObject(i, o)
+        if o.tabaka = tbk and o.tag = 7 then
+            alan = alan + o.area
+        end if
+      next
+      alan = alan/10000
+      yog= n/(k*alan)
+        for i = 0 to SEL.NE-1
+        j = SEL.GetSelectedObject(i, o)
+        set p = .GetPlineExt(o)
+         set y =  .MakeText(.Newc(p.CenterOfMass.y,p.CenterOfMass.x - 5, 0), round(yog,0) & " k/ha", 0,1, 2,0,0, .CreateLayer("SM_YOGUNLUK", 16))
+         .AddObject y
+      next
+      SEL.RedrawAndRewind                  ' secim kumesini toplu kendi renginde
+    end if                                 ' cizdir ve kumeyi basa sardir.
+    set SEL = nothing
+    set o = nothing
+  set BD = Nothing
+  end with
+end sub
+

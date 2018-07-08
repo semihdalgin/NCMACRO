@@ -1,0 +1,32 @@
+'Tarih :04/03/2001 V1.00
+' Amaç : Ekrandan seçilen objenin renk, tabaka,hattipi deðerlerini
+'        seçilen diðer objelere atamak.
+'Girdi : Obje
+
+SUB Main
+DIM ss,b,h
+ 
+  with netcad
+    set ss = .NewSelectStatus                         ' Anlik Secim objesi yarat
+    .SelectObjectInstant "Seçtiðiniz objenin biçimi alýnacak.",1,array(),ss
+    set b= ss.objects(0)                              'Biçimleri b objesine ata
+    while .SelectObjectInstant("Seçtiðiniz objenin biçimi deðiþecek.",1,array(),ss)  ' obje sec
+      set h = ss.objects(0)                           ' Secim objesinin ilk objesini al
+      h.tabaka=b.tabaka
+      h.W=b.W
+      h.LT=b.LT
+      .PutObject ss.indexs(0), h                      ' objeyi geri koy
+      .DrawObject h,-1                                ' kendi rengi ile ciz
+    wend
+    set ss = nothing
+    set b = nothing
+    set h = nothing
+  end with
+END SUB
+
+
+
+
+merhaba aslý... hayatýnda neler olup bitiyor iy veya kötü neler yaþýyorsun bilmiyorum... söylediklerinin oðuna katýlmýyorum hatta hiç birine.. çünkü benim adýma kara vermiþsin.. oysa bu sonuca benim varmam gerekirken kendinei benim yerime koyup benim adýma karar vermiþsin.. bu haksýzlýk diye düþünüyorum... hangi bireyin hayatý istediði gibi gidiyor veya yaþayaibliyor ki... hayatý her yönü ile gördüm ölümüde gördüm mutluluðuda gördüm üzüntüyü de gördüm acýyýda yaþadým... o yüzden karmaþýklýktan kastýn ne bilmiyorum ama sen var olduðun sürece hiç bir karþýkýlýk ve çözünmsüzlük beni etkilemeyecektir bunu bilmeni istiyorum aslý... her insan kendi yaþantýsýndan sorumlu.. bu elbette tek olan bir birey için geçerli... ama ben artýk çift olmak ve yaþamýn herþeyini seninle birlikte göðüslemek istiyorum... iyi veya kötü acý veya tatlý ... bu benim kararým ve bundan asla bir adým dahi geri adým atmayacaðýmý bilmeni istiyorum... kafam karýþýk deðil... düþünceler hiç olmadýðý kadar net ve berrak.. ne istediðimi neden istediðimi biliyorum.. elimden geldiðince de sana anlatmaya çalýþýyorum... ama son yazdýklarýndan bundan pek baþarýlý olmadýðýmý gösteriyor... o yüzden biraz daha fazla çaba harcama gerekiyor kendimi ifade etmek için... hayat her zaman toz pembe deðildir ki... benim için neysen o sundur... herþeyinle ve olduðun gibisin... þu veya bu nedenle insanlarý asla yargýlamadým sorgulamadým da... yaþam benim yaþantým... yaþam senin yaþamýn... tüm kalbimle bizim yaþamýmýz olmasýný istiyorum... herþeyiyle.... o yüzden baþtanda söylediðim gibi kararýmda en ufak bir gerileme dahi olmayacak... tek bir þey dýþýnda... sen istediðin sürece... bu söylediklerime yüz yüze konuþmak isterdim... söylediklerin sadece senin düþüncen benim asýma... benim düþündüklerim ise söylediklerinden çok farklý bunu bilmeni istedim... yaþam ve ölüm arasýndaki ince çizgide zamaný yakalamaya 
+
+

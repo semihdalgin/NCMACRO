@@ -1,0 +1,57 @@
+
+' Amaç : Profil Alma örneði. Görünürlük Analizi nesnesi kullanýlarak
+'        Projedeki Grid Referanslar üzerinde seçilen iki nokta arasýndaki
+'        profili bulur ve Projede seçilen bir yere ekler.
+' Yazan: Kamran Özcan 
+' Tarih: 16.09.2004
+
+Sub Main
+dim Vis, Reflist,i,Grid, c, c1, c2, delta,poly,o, p, snapc, markedpos
+  with netcad
+
+    set Vis = .NewVisibilityAnalysis
+
+    ' Grid Desteði olan Aktif referanslari, gorunurluk analizi nesnesine ekle
+    RefList = NCRefman.GetSupportedReferences(Macro_Support_Grid, TRUE)
+    for i = 0 to UBound(RefList)
+      set Grid = RefList(i).Grid  ' Referanstan Grid nesnesi iste
+      Vis.AddGrid Grid
+    next
+
+    if UBound(RefList) >=0 then
+      set c1 = .Newc(0, 0, 0)
+      set c2 = .Newc(0, 0, 0)
+      set poly = .Newpoly
+      while .SelectPoint("Baþlangýç Noktasýný göster", c1, -1) and _
+         .SelectPoint("Bitiþ Noktasýný göster", c2, -1)
+
+         ' Profili Bul
+         delta = NCMath.Distance(c1, c2, false) / 20 ' Ayrica 20 noktadan olcum yap
+         Vis.ProfileOnLine c1, c2, delta, poly
+
+         ' Bulunan Profili cizim haline getir
+         set p = .Newpoly
+         for i = 0 to poly.num-1
+           set c = .Newc(0, 0, 0)
+           c.y =   NCMath.Distance(c1, poly.Cor(i),false)  ' plandan mesafeler
+           c.x =   poly.Cor(i).z                           ' dusey degerler = kot
+           p.AddCoor(c)
+         next
+
+         ' Profil egrisi hazir
+         ' simdi obje bufferi isaretle, profil egrisini ekle
+         ' ve kullaniciya projede bir yer sectir
+         markedpos = .NumObject
+         set o = .makepline("xx", 0,0,0,0,0, p)
+         o.renk = red
+         .addobject o
+
+         set snapc = p.Cor(0)
+         .Place "Profil icin yer gosteriniz", snapc, markedpos
+
+         msgbox "Tamam"
+      wend
+    end if
+
+  end with
+End Sub

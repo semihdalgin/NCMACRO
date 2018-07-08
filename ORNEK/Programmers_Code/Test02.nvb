@@ -1,0 +1,21 @@
+'
+' Dil  : Visual Basic
+' Amaç : Filitre yontemi ile aktif projedeki istenen objeleri
+'        taramak ve objelerin turlerini mesajla gostermek
+'
+Sub Main
+Dim o
+  with Netcad
+    .SetFilter nothing, array(), array(opoint,oline,opline,oshape)  'Filitre uygula
+    Do
+      set o = .GetNextObject   ' Yukardaki Kurala uyan bir sonraki objeyi getir
+      if o is nothing then     ' Eger kurala uyan obje kalmadiysa sonuc "nothing" doner
+        exit do                ' Bu durumda donguyu durdur
+      else                     ' Yoksa obje gelmistir
+        msgbox ObjectNames(o.tag) & " = " & .CurObjPos  ' Ekrana mesaj olarak turunu
+      end if                                            ' ve indeksini goster
+      set o = nothing              ' obje icin alinan memoryi geri ver
+    Loop
+    .ResetFilter                   ' Filitre uygulamayi birak.
+  end with
+end sub

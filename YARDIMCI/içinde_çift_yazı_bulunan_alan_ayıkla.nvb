@@ -1,0 +1,76 @@
+
+'Tarih    : 23.06.2006
+'Amaç     : BÝR KAPALI ALAN ÝÇÝNDE ÇÝFT YAZI VARSA ALAN OBJESÝNÝ PROBLEMLÝ TABAKASINA ALIR
+
+SUB Main
+DIM o,ss,b,h,i,d,ds ,j,mes,mysqr,c1,c2,reg ,cnum, lnum
+Dim BD
+Dim AdaTabaka, ParselTabaka, AdaNoTabaka, ParselNoTabaka
+Dim Ada
+Dim s,iy,by,mode,parsel,pln
+with netcad
+  set BD = .NewBDialog("")
+  BD.GetString  "Parsel","Alan Tabakasý", "ALAN", 15
+  BD.GetString  "Yazi","Yazý Tabakasý", "NO", 15
+  BD.PutPrompt  "Tabaka isimlerini büyük harfle yazýn !"
+  BD.PutPrompt  " "
+  if BD.showmodal then
+    ParselTabaka=.FoundLayer(BD.ValueByName("Parsel"))
+    ParselNoTabaka=.FoundLayer(BD.ValueByName("Yazi"))
+    if  ParselTabaka=-1 or ParselNoTabaka=-1 then
+      msgbox "girdiðiniz tabakalardan biri veya birkaçý projede bulunamadý !!!"
+      Exit Sub
+    End if
+   Else
+    Exit Sub
+  End if
+  set BD = Nothing
+  for i = 0 to .numobject-1
+    .BackMessage
+    .SetMessage i
+    set parsel = .getobject(i)
+    if parsel.tag = opline and parsel.tabaka=ParselTabaka  then
+          .DrawObject Parsel, blue
+      .SetFilter .ObjectExtends(Parsel), array(ParselNoTabaka), array(otext)          'Filitre uygula
+       Do
+         set by = .GetNextObject
+         if by is nothing then
+                    exit do
+          else
+           set pln=.GetPlineExt(parsel)
+           if pln.InPoly(by.p1) then
+             s=s+1
+           end if
+         end if
+       Loop
+
+       if s>0 then
+         if s=1 then
+           .ResetFilter
+           s=0
+           mode=0
+           iy=""
+          else
+           parsel.tabaka=.CreateLayer("PROBLEMLÝ",7)
+           .PutObject i, parsel
+           .ResetFilter
+           s=0
+           mode=0
+           iy=""
+         end if
+        else
+         parsel.tabaka=.CreateLayer("PROBLEMLÝ",7)
+         .PutObject i, parsel
+         .ResetFilter
+         s=0
+         mode=0
+         iy=""
+       end if
+    end if
+    set by = nothing
+  next
+  set parsel=nothing
+  .BackMessage
+  .NetcadCommand("REGEN")
+end with
+END SUB

@@ -1,0 +1,5 @@
+sub main
+    with netcad
+        .NetcadCommand("RM CLEAR")
+    end with
+end sub

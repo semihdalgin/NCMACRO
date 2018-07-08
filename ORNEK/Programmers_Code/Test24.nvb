@@ -1,0 +1,20 @@
+'
+' Dil  : Visual Basic
+' Amaç : Yazi Objelerinin Yazisini VtKoduna cevirmek
+'
+Sub Main
+Dim ss,o
+  with netcad
+    set ss = .NewSelectStatus   ' Anlik Secim objesi yarat
+    while .SelectObjectInstant("Yazý objesi Seç",1,array(otext),ss)  'obje sec
+      set o = ss.objects(0)         ' Secim objesinin ilk objesini al
+      .DrawObject o,0   ' silinmis gibi ciz
+      o.s = o.objname   ' VT Kodunu yazisina ver
+      .PutObject ss.indexs(0), o    ' objeyi geri koy
+      .DrawObject o,-1  ' kendi rengi ile ciz
+      set o = nothing
+    wend
+    set ss = nothing
+  end with
+end sub
+

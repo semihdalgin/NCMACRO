@@ -1,0 +1,9 @@
+sub main
+dim kategori ,k
+    with netcad
+         kategori=Inputbox("Kategori Adýný Tam Adýyla Girin:")
+         k= "RM DELETE CATEGORY " & kategori
+         'msgbox k
+        .NetcadCommand(k)
+    end with
+end sub

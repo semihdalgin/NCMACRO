@@ -1,0 +1,38 @@
+'
+' Dil  : Visual Basic
+' Amaç : Secilen Coklu Dogrularin Objeleri kesistirmek
+'        NewSelectStatus, SelectObjectInstant,
+'        poly.Operation kullanim ornegi
+'        Ayrica Yeni objeleri BINA tablosuna ekler
+'
+Sub Main
+Dim ss, o, p1, p2, px, i, OC, backref
+  with netcad
+    set ss = .NewSelectStatus   ' Anlik Secim objesi yarat
+    while .SelectObjectInstant("2 tane Kapali coklu dogru objesi Seç",2,array(opline),ss)  'CokluDogru objesi sec
+      set p1 = .GetPlineExt(ss.objects(0))
+      set p2 = .GetPlineExt(ss.objects(1))
+      set OC = p1.Operation(polyintersect, p2)  ' Kesisim islemi
+      set o  = .NewObject
+      set px = .NewPoly
+
+      ' Sonucta bulunan CokluDogrulari Yeni Obje olarak ekle.
+      for i = 0 to OC.NE-1
+        backref = OC.GetObject(i, o, px)
+        set o = .MakePline("POLYX", POLYCLOSED+POLYFILLED, 0, 0, 0, 0, px)
+        o.cls = "BINA"
+        if not .AddObjectDB(o, px) then
+          msgbox "Obje ve Kayit Eklenmedi ! (Kullanici Veri girisini iptal etti veya Baglanti Yoneticisinde SINIF tanimi yok)"
+        end if
+      next
+
+      set px = nothing
+      set o  = nothing
+      set OC = nothing
+      set p1 = nothing
+      set p2 = nothing
+    wend
+    set ss = nothing
+  end with
+end sub
+

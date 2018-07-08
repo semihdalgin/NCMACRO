@@ -1,0 +1,49 @@
+' Yazan : Ercüment KORKMAZ
+' Tarih : 18.11.2005
+' Açýklama : spatial olan bir tablonun obje haline getirilerek  tabaka bazlý tematik yapma
+Sub Main
+Dim i, ds, con, a, b, c , ta, s, o , po, obj, snf, oi, bd, co, col
+a = 0
+c = 0
+s = 0
+  with Netcad
+    set bd = .NewBDialog("SINIF VE COLON ADI GÝR")
+    bd.GetString "snf", "SINIF GÝR", "BAYRAMPASA", 20
+    bd.GetString "col", "ID KOLON ADI GÝR", "OBJECTID", 20
+    bd.GetString "co", "TEMATÝK KOLON ADI GÝR", "ANA_FONKSIYON_Z", 20
+    bd.showmodal
+    snf = bd.ValueByName("snf")
+    co = bd.ValueByName("co")
+    col = bd.ValueByName("col")
+    set ds =  NCConman.FindDatasetByFC(false, snf)
+      ds.open
+      ds.first
+       set con = ds.ColumnByName(co)
+       set oi = ds.ColumnByName(col)
+      while not ds.EOF
+       on error resume next
+        a= con.value
+        if con.value =< 0 then a = CInt(con.Value)
+        if con.value = "" then a = 0
+        NCLayerManager.Add  a, 4
+        a = NCLayerManager.Find (a)
+
+        set o=  ds.Geometry.p
+     set po =  .MakePline (a, 3, 0, a,0, 0, o)
+        po.objname= oi.value
+       .AddObject po
+      ds.next
+      wend
+      for b= 102 to 160
+        set ta = NCLayerManager.Layer (s)
+        ta.Color = b
+        s= s + 1
+      next
+       for i = 0 to .NumObject-1
+        set obj = .GetObject(i)
+        'obj.Tabaka = .FoundLayer (obj.pname)
+        obj.cls  = snf
+        .PutObject i, obj
+       next
+  end with
+End Sub

@@ -1,0 +1,15 @@
+
+' Amaç : Referans Yapýsýna komut bazinda ulaþým örnekleri
+' Yazan: Kamran Özcan 
+' Tarih: 16.09.2004
+
+Sub Main
+   with netcad
+      .NetcadCommand("RM CLEAR")
+      .NetcadCommand("RM ADD CATEGORY GRIDLER")
+      .NetcadCommand("RM ADD REFERENCE D:\Data\proje\dted\E020_N32.DT1 1 GRIDLER")
+      .FindWorld
+      .NetcadCommand("RM DELETE REFERENCE D:\Data\proje\dted\E020_N32.DT1")
+      .NetcadCommand("RM SAVE")
+   end with
+End sub

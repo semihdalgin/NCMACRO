@@ -1,0 +1,11 @@
+//
+// Dil : Java
+// Yeni Dosya Yukleme Ornegi.
+
+function Main() {
+  with (Netcad) {
+    // Dizine DIKKAT edin ! Javada Duz Slash "/" kullanmaniz lazim.
+    LoadFile('D:/PLT/BEST/TURK.NCZ', fs_bnetcad);
+  }
+}
+

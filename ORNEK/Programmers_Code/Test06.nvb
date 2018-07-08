@@ -1,0 +1,18 @@
+'
+' Dil  : Visual Basic
+' Amaç : Sembol Yaratip, ekranda Gezdirerek Projeye eklemek
+'        MakeSembol, WalkObject kullanimi.
+Sub Main
+Dim c,o
+  with Netcad
+    set c = .newc(0,0,0)
+    set o = .MakeSembol(c,155,0,2,0,0)                ' 155 nolu semboldan yarat
+    while .WalkObject("Sembol için Yer Seç",c,-1,o)   ' Sembolu Ekranda yurut
+      o.p1 = c                                        ' Gelen koordinati al
+      .AddObject(o)                                   ' projeye ekle
+    wend                                              ' iptal edilene kadar
+    set c = nothing
+    set o = nothing
+  end with
+end sub
+

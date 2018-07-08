@@ -1,0 +1,107 @@
+
+' Bu ornek Secilen kapali cokludogru objesinin icine dusen
+' objeleri secer.
+
+
+' BU RUTIN CIZGININ ETRAFINDAKI YAZILARI BULUR
+sub DoSomething (oi, lineo)
+Dim texto
+  ' Bu rutin bir cizginin etrafindaki yazilari secer
+  with netcad
+    ' burda cizginin limitlerini biraz genisletmek mumkun
+    ' ornegin 50 metre buyutelim
+    ' boylece civardaki yazilarida yakalamak mumkun
+    lineo.limits.cll.x = lineo.limits.cll.x - 50
+    lineo.limits.cll.y = lineo.limits.cll.y - 50
+    lineo.limits.cur.x = lineo.limits.cur.x + 50
+    lineo.limits.cur.x = lineo.limits.cur.x + 50
+    set texto = .Newobject              ' Gecici obje yarat
+    .SetFilter lineo.limits, array(), array(otext)  'Filitre uygula
+    while .GetNextObject2(texto)     ' Eger yukardaki kurala uyan obje varsa
+                                     ' onu bizim objenin icine getir
+
+       ' Burada Cizgiye En yakin yaziyi bulmak icin birseyler yapabiliriz.
+       .DrawObject texto, red   ' Emin olmak icin farkli bir renkle ciz, bunu
+                                ' kullanmayabilirsiniz
+    wend
+    .ResetFilter  ' Filitre uygulamayi birak.
+    set texto = nothing
+  end with
+end sub
+
+
+' ASIL PROGRAM BURADAN BASLIYOR
+Sub Main
+Dim ss, o, okapali
+Dim linesel, sembolsel
+Dim ni, p, inta, i, oi
+
+  with netcad
+    set ss = .NewSelectStatus       ' Anlik Secim objesi yarat
+    set o = .Newobject              ' Gecici obje yarat
+    set linesel = .NewSelectionSet    ' Cizgileri tutan array
+    set sembolsel = .NewSelectionSet  ' Sembolleri tutan array
+    set inta = .newpoly             ' obje kesismeleri icin lazim
+
+    if .SelectObjectInstant("Kapali CokluDogru objesi Seç",1,array(opline),ss) then 'obje sec
+      set okapali = ss.objects(0)   ' Secim objesinin ilk objesini al,
+      set p = .getplineext(okapali) ' pline yapisini al
+
+      ' Simdi filitre uygula ve kapali cokludogrunun icine dusenleri listelere ekle.
+      .SetFilter okapali.limits, array(), array(oline,oshape)  'Filitre uygula
+      while .GetNextObject2(o)     ' Eger yukardaki kurala uyan obje varsa
+                                   ' onu bizim objenin icine getir
+
+        ' Cizgileri linesel adli listeye ekle
+        if o.tag = oline then
+          ni = .IntersectObjects(okapali, o, inta)
+          if (ni = 0) and p.inpoly(o.p1) and p.inpoly(o.p2)  then
+
+            linesel.AddSelection .CurObjPos   ' line listesine ekle
+            .DrawObject o, yellow    ' Emin olmak icin farkli bir renkle ciz, bunu
+                                     ' kullanmayabilirsiniz
+          end if
+        end if
+
+        ' sembolleri sembolsel adli listeye ekle
+        if o.tag = oshape then
+          if p.inpoly(o.p1) then
+
+            sembolsel.addselection .CurObjPos   ' sembol listesine ekle
+            .DrawObject o, yellow    ' Emin olmak icin farkli bir renkle ciz, bunu
+                                     ' kullanmayabilirsiniz
+          end if
+        end if
+
+      wend
+      .ResetFilter                 ' Filitre uygulamayi birak.
+
+      ' Simdi bu listelerdeki objeleri baska islerde kullanabiliriz
+      for i = 0 to linesel.NE-1
+        oi = linesel.GetSelectedObject(i, o)  ' hem objeyi hemde gercek obje indexini dondurur
+                                              ' her ikiside bi yerlerde lazim olabilir.
+
+        DoSomething oi, o   ' Buraya bu cizgi ile yapilacak bi seyler konabilir.
+
+      next
+
+      '
+      ' ... Burada Semboller icinde ayni donguden yapabiliriz.
+      ' for i = 0 to sembolsel.NE-1
+      ' ....
+      ' next
+      '
+
+      set p = nothing
+      set okapali = nothing
+    end if
+
+    ' Ters sirada free etmek memoryde bosluk kalintisi yaratmaz
+    set inta = nothing
+    set sembolsel = nothing
+    set linesel = nothing
+    set o = nothing              ' Gecici objeyi hafizadan sil
+    set ss = nothing
+  end with
+end sub
+

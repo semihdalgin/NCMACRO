@@ -1,0 +1,21 @@
+'
+'  Amac : Bir macro dosyasi bazi parametreler ile cagrildiginda
+'         bu parametrelere ulasmak ve gerekirse degistirmek, eklemek
+'
+
+Sub Main
+  msgbox "HELLO Test22 is here"
+  ' Bize gonderilen parametreleri NCParam objesi ile ogrenebiliriz
+  msgbox "Given AA = " & NCParam.GetValue("AA")
+  msgbox "Given BB = " & NCParam.GetValue("BB")
+
+  ' Istersek yeni parametreler ekleyebiliriz.
+  ' Eger Parametre Listede varsa degeri yenilenir, yoksa yeni eklenir.
+  with NCParam
+    .SetValue "AA", 5
+    .SetValue "BB", "NEW222"
+    .SetValue "CC", "NEW333"
+    .SetValue "DD", "NEW444"
+  end with
+  msgbox "Test22 Finished"
+End Sub

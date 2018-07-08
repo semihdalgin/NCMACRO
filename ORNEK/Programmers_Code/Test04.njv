@@ -1,0 +1,28 @@
+/*
+   Dil : Java
+   BDialog Kullanim ornegi.
+   Run-time da kullanicidan bilgi almak icin kullanilir
+*/
+function Main() {
+var BD;
+  with (Netcad) {
+    BD = NewBDialog('Hello BDialog');
+    BD.GetInteger('item1','Bir Tam Sayi Girin',1555);
+    BD.GetFloat  ("item2","Bir Real Sayi Girin", 1555.334, 3);
+    BD.GetString ("item3","Bir Yazi Yazin", "Hello Str", 15);
+    BD.GetCheck  ("item4","Bunu iþaretleyin", 1);
+    BD.GetRadio  ("item5","Birini Seçin","Bir|Iki|Uc|Dort",2);
+    BD.GetCombo  ("item6","Bununda Birini Seçin","one|two|three|four|five",1);
+    BD.PutPrompt ("Bir Açýklama yapabilirsiniz !");
+
+    if (BD.showmodal()) {
+      Message(0, BD.ValueByName("item1"),'');
+      Message(0, BD.ValueByName("item2"),'');
+      Message(0, BD.ValueByName("item3"),'');
+      Message(0, BD.ValueByName("item4"),'');
+      Message(0, BD.ValueByName("item5"),'');
+      Message(0, BD.ValueByName("item6"),'');
+    }
+  }
+}
+

@@ -1,0 +1,131 @@
+'VERSION     : v0.02
+'TARIH       : 30.09.2004
+'AMAÇ        : Beliri bir tabakada bulunan ve çakýþan alan, yazý, sembol, blok, doðru
+              'objelerinin ayýklanmasý
+' HAZIRLAYAN : Barýþ Göral
+' NetCAD Ýstanbul Bölge Müdürlüðü
+'
+'20050412 : Tüm tabakalarda arama eklendi.
+'20050624 : Kapalý tabakalar görüntülenmesin eklendi
+'
+sub Main
+dim i,j,o,oo,p,obj,k
+dim dlg,layers,objects
+dim objtype,layerId,nLayerId
+dim all
+dim arr(0)
+   with Netcad
+   set dlg = .NewBDialog("Obje Ayýkla")
+   for i = 0 to  ncLayerManager.NumLayer-1
+      if ncLayerManager.layer(i).isOpen then
+        layers = layers & ncLayerManager.layer(i).Name & "|"
+      end if
+   next
+
+   'tableArrayList()
+
+
+   objects = "Alan" & "|" & "Yazý" & "|" & "Sembol" & "|" & "Blok"  & "|" & "Doðru" & "|" & "Nokta"
+
+   dlg.GetCombo "LAYER", "TABAKALAR", layers, 0
+   dlg.GetCheck "TUMU", "TÜM TABAKALARDA ARA", 0
+   dlg.getcombo "OBJECT","OBJELER",objects,0
+   dlg.GetString "NLYR", "ÇÝFT OBJE TABAKASI", "", 20
+
+   if dlg.showmodal then
+
+     .createLayer dlg.ValueByName("NLYR"), red
+     nlayerId = .foundlayer(dlg.ValueByName("NLYR"))
+    .closeLayer(nlayerId)
+
+     layerId  = dlg.ValueByName("LAYER")
+     objType = getObjType(dlg.ValueByName("OBJECT"))
+     all = dlg.ValueByName("TUMU")
+
+     moveObjects layerId,nLayerId,objType,all
+
+   end if
+   end with
+End Sub
+
+function getObjType(idx)
+     if idx = 0 then
+       getobjtype = opline
+     elseif idx = 1 then
+        getobjtype = otext
+     elseif idx = 2 then
+        getobjtype = oshape
+      elseif idx = 3 then
+        getobjtype = oblock
+      elseif idx = 4 then
+        getobjtype = oline
+      elseif idx = 5 then
+        getobjtype = opoint
+     end if
+end function
+
+
+sub moveObjects(LayerId,nLayerId,objType,all)
+dim o,oo,i,j,k
+    with netcad
+      k = 0
+      set oo = .newobject
+      if all = 0 then
+      for i = 0 to .numobject-1
+         .backmessage
+         .setmessage "Ayýklanan obje sayýsý : " & k & " : liste i " & i
+         set o = .getobject(i)
+         if o.tag = objType and o.tabaka = LayerId then
+           .setfilter o.Limits,array(LayerId),array(objType)
+           do while .GetNextObject2(oo)
+              if (o.tag = objtype) and (oo.tag = objtype) and (i <> .CurObjPos) and _
+              (o.tabaka = layerId) and (oo.tabaka = layerId) and _
+              (o.Limits.cll.x = oo.Limits.cll.x) and (o.Limits.cll.y = oo.Limits.cll.y) and _
+              (o.Limits.cur.x = oo.Limits.cur.x) and (o.Limits.cur.y = oo.Limits.cur.y) then
+              o.tabaka = nLayerId
+              '.setcurrentwindow o.limits,true
+              .drawobject o,black
+              .putobject i,o
+               k = k + 1
+              .backmessage
+              .setmessage "Ayýklanan obje sayýsý : " & k & " : liste i " & i
+              exit do
+             end if
+           loop
+           .ResetFilter
+         end if
+         set o = nothing
+      next
+      else
+      for i = 0 to .numobject-1
+         .backmessage
+         .setmessage "Ayýklanan obje sayýsý : " & k & " : liste i " & i
+         set o = .getobject(i)
+         if o.tag = objType then
+           .setfilter o.Limits,array(),array(objType)
+           do while .GetNextObject2(oo)
+              if (o.tag = objtype) and (oo.tag = objtype) and (i <> .CurObjPos) and _
+              (o.tabaka = oo.tabaka ) and _
+              (o.tabaka <> nLayerId) and _
+              (oo.tabaka <> nLayerId) and (o.Limits.cll.x = oo.Limits.cll.x) and (o.Limits.cll.y = oo.Limits.cll.y) and _
+              (o.Limits.cur.x = oo.Limits.cur.x) and (o.Limits.cur.y = oo.Limits.cur.y) then
+              o.tabaka = nLayerId
+              '.setcurrentwindow o.limits,true
+              .drawobject o,black
+              .putobject i,o
+               k = k + 1
+              .backmessage
+              .setmessage "Ayýklanan obje sayýsý : " & k & " : liste i " & i
+              exit do
+             end if
+           loop
+           .ResetFilter
+         end if
+         set o = nothing
+      next
+      end if
+    .backmessage
+    .setmessage "HAZIR ..."
+    msgbox "Ayýklanan obje sayýsý : " & k
+    end with
+end sub

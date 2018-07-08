@@ -1,0 +1,35 @@
+' Ornek Raster Processing
+' Yazan: Kamran Ozcan, 24.03.2005 
+' Uc degisik turde Raster dosyalarina ulasmak mumkun. Asagidaki ornege bakarsaniz
+' Su anda bunlardan sadece biri acik, digerleri remark edilmis durumda,
+' Dosyadan, Refmandan veya Netcad den herhangi bir rastera ulasilabiliyor.
+' Sabitler dosyasina NcBasic.nvb ve javaya, RASTER_PROC_xxx sabitleri eklendi.
+
+' Not : input ve output dosya adlarini kontrol etmelisiniz !.
+
+
+sub main
+dim g, p, keyword,input,output
+  with netcad
+
+   input =  "D:\Data\proje\blokprj\689L.DRE"  ' Her turlu raster dosyada olabilir. DRE olmak zorunda degil !!
+   output = "D:\sil\689.jpg"
+
+
+   'set g = .newGeoRaster(input)                           ' 1- Dosyadan yukleme ornegi
+   'set g =  NCRasterManager.GetRaster(0)                 ' 2- Netcad e Tam yuklu rasterlardan alma ornegi
+   set g =  NCRefman.Category(0).Reference(0).GeoRaster  ' 3- Refman/Referanslardan alma ornegi
+
+   set p = .newRasterProcessor(RASTER_PROC_ContrastAdjust)
+   keyword = p.GetInputKeyword(0)
+
+   if p.SetSource(keyword, g) then
+     if p.Edit then
+      if p.SaveToFile(output, IMAGE_JPG, true) then
+         msgbox "Dosya cevrimi basarili"
+       end if
+     end if
+   end if
+  end with
+end sub
+

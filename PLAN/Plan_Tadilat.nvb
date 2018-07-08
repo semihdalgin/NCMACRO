@@ -1,0 +1,28 @@
+'
+' Yazan : Ercüment KORKMAZ
+' Tarih : 03.04.2007
+' Açýklama : Seçilen Objenin tabakasýnýn baþýna T_ koyarak
+' yeni bir tabaka açýyor ve objeyi otabakaya taþýyor
+'
+Sub Main
+Dim ss,o, tbk, tbkstr, clr, tbky
+  with netcad
+    set ss = .NewSelectStatus
+    while .SelectObjectInstant("Objesi Seç",1,array(),ss)
+      set o = ss.objects(0)
+         tbkstr = .LayerNameOf(o.tabaka)
+         clr = .LayerColorOf(o.tabaka)
+          tbkstr = "T_"& tbkstr
+         if  msgbox ("Açýlacak ve objenin taþýnacaðý tabaka : " & tbkstr,1) = 1 then
+          .CreateLayer tbkstr, 4
+        tbky = .FoundLayer(tbkstr)
+        o.tabaka = tbky
+      .PutObject ss.indexs(0), o
+      .DrawObject o,-1
+      end if
+      set o = nothing
+    wend
+    set ss = nothing
+  end with
+end sub
+

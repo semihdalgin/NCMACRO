@@ -1,0 +1,37 @@
+
+' Yazan :  ERCÜMENT KORKMAZ
+' Tarih : 19.03.2007
+' Açýklama :  nüfus projeksiyonu hesabý
+
+Sub Main
+Dim i , bd, y1,n1,y2,n2,y3,n3, farky, bolum, logg, r, farkh , carp, toplam
+  with Netcad
+  toplam = 0
+  set BD = Netcad.NewBDialog("Nufus Hesapla...")
+
+  BD.GetInteger "item1","Ýlk Yýlý Giriniz ",1985
+  BD.GetInteger "item2", "Ýlk Yýl Nüfüsunu Giriniz", 50664458
+  BD.GetInteger "item3","Ýkinci Yýlý Giriniz ",1990
+  BD.GetInteger "item4", "Ýkinci Yýl Nüfüsunu Giriniz", 56473035
+  BD.GetInteger "item5","Hesaplanacak Yýlý Giriniz ",1990
+  if BD.showmodal then
+    y1 = BD.ValueByName("item1")
+    n1 = BD.ValueByName("item2")
+    y2 = BD.ValueByName("item3")
+    n2 = BD.ValueByName("item4")
+    y3 = BD.ValueByName("item5")
+    farky = y2-y1
+    farkh=y3-y1
+    bolum = n2/n1
+    logg = log(bolum)
+    r = (logg/farky)
+     carp =(2.718281828^r)
+     toplam = n1
+    for i=1 to farkh
+     toplam = round((carp*toplam), 0)
+    next
+     msgbox  "Hesaplanan " & y3 & " Yýlý Nüfusu = " & toplam
+  end if
+  set BD = Nothing       
+  end with
+End Sub

@@ -1,0 +1,25 @@
+' Amaç : Ýstenen bir dosyayý Açmak,
+'        Üzerinde Ýþlemler yapýp yeni isimle Sakladýktan sonra Kapatmak.
+' Yazan : Kamran Özcan
+' Tarih : 21.09.2004
+sub main
+
+dim OLDFN, NEWFN
+
+  with Netcad
+     OLDFN = "D:\sil\cap88.ncz"    ' Yüklenecek dosya
+     NEWFN = "D:\sil\cap99.ncz"    ' Bu Ýsimde saklanacak
+
+    .LoadFile  OLDFN, fs_bnetcad          ' Dosyayi yukler
+
+    .NetcadCommand "PROJECT CLEAN 1,0,1,0,0,1"
+    '[Layers],[LineTypes],[Fonts],[Symbols],[Blocks],[Slient]
+    'Bu Ornekte Sadece Kullanilmayan Tabakalar ve Fontlar Temizleniyor
+    'Temizlenmesini istediklerinizi 1 yapmaniz yeterli
+    'Ayrica Ekranda Mesaj gostermez (Slient=1)
+
+    .SaveToFile NEWFN                     ' NCZ olarak saklar
+
+    .NetcadCommand "CLOSE ACTIVEPROJECT"  ' Ýþimiz bitince Projeyi Kapat
+  end with
+end sub

@@ -1,0 +1,82 @@
+
+' Yazan : Ercüment KORKMAZ
+' Tarih : 29.01.2007
+' Açýklama : TAKS KAKS HESABI
+
+Sub Main
+on error resume next
+Dim i, o , tbk , tbk1, tbk3, p, by, pln, pln1 , barea, txt , kat, aaln, say, taks, kaks
+dim BD, ytbk, ytbk1, ytbk3, taksy, kaksy
+set BD = Netcad.NewBDialog("Hello Dialog")
+BD.PutPrompt  "Gereken Tabaka Adlarýný Giriniz...  !"
+BD.GetString  "item","Ada Tabakasý", "PL_KONUT", 15
+BD.GetString  "item1","Bina Tabakasý ", "BINA", 15
+BD.GetString  "item3","Katadedi Tabakasý", "KATADEDI", 15
+if BD.showmodal then
+ytbk =  BD.ValueByName("item")
+ytbk1 =  BD.ValueByName("item1")
+ytbk3 =  BD.ValueByName("item3")
+end if
+barea = 0
+kat = 0
+aaln = 0
+say =0
+taks = 0
+kaks= 0
+with Netcad
+tbk =  .FoundLayer(ytbk)
+tbk1 = .FoundLayer(ytbk1)
+tbk3 = .FoundLayer(ytbk3)
+.CreateLayer "SM_TAKS", 16
+.CreateLayer "SM_KAKS", 16
+set taksy = .NewObject
+set kaksy = .NewObject
+.SetFilter nothing, array (tbk) , array (opline)
+do
+set o = .GetNextObject
+i =  .CurObjPos
+if o  is nothing then
+exit do
+end if
+aaln = o.area
+.SetFilter .ObjectExtends(o), array (tbk1), array (opline)
+Do
+set by = .GetNextObject
+if by is nothing then
+exit do
+else
+set pln=.GetPlineExt(o)
+set pln1= .GetPlineExt(by)
+if pln.InPoly(pln1.CenterOfMass) then
+.DrawObject o, RED
+barea = barea + by.area
+end if
+end if
+Loop
+.resetfilter
+.SetFilter .ObjectExtends(o), array (tbk3), array (otext)
+Do
+set txt = .GetNextObject
+if txt is nothing then
+exit do
+else
+if pln.InPoly(txt.p1) then
+kat = kat + txt.s
+say = say +1
+end if
+end if
+Loop
+.resetfilter
+taks =  round(barea / aaln , 2)
+if kat > 0 then kaks = round(taks * (kat/say),2)
+.addobject .MakeText (pln.CenterOfMass, "TAKS = " & taks, 0,1, 2,0,0,.foundlayer("SM_TAKS"))
+.addobject .MakeText (.Newc(pln.CenterOfMass.y,pln.CenterOfMass.x + 5, 0), "KAKS = " & Kaks, 0,1, 2,0,0,.foundlayer("SM_KAKS"))
+barea = 0
+kat = 0
+say =0
+taks = 0
+kaks= 0
+loop
+.ResetFilter
+end with
+End Sub

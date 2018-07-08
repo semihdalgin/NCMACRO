@@ -1,0 +1,59 @@
+'
+' Amaç : Conman Dataset Filter Kullaným Örneði
+'
+'        Ekrandan seçilen noktanýn hangi spatial kayýtlarýn içine
+'        düþtüðünü bulur ve bunlarý kýrmýzý renkle çizer
+' Yazan: Kamran Özcan 
+' Tarih: 16.09.2004
+
+Sub Main
+dim DS, Filter,c,p,a, Sinif,w
+
+   Sinif = "BINA"
+
+   ' Orginal Dataseti Sinifindan Bulur, yoksa uyar
+   set DS = NCConman.FindDatasetByFC(False, Sinif)
+   if DS is nothing then
+     msgbox "Projede " & Sinif & " adlý bir sýnýf yok !"
+     Exit Sub
+   end if
+
+   ' Spatial Tablonun limitlerini bulup projede buraya yaklas
+   set w = DS.Limits(true)
+   Netcad.SetCurrentWindow w, true
+
+   with Netcad
+     set c = .Newc(0, 0, 0)
+     set p = .NewPoly
+     while .SelectPoint ("Bir Nokta seçin", c, -1)
+       p.Clear
+       p.AddCoor(c)
+
+       ' Noktayi icerenler filitresi yarat
+       set Filter = .NewDatasetFilter
+       Filter.FilterType = NC_GISDS_IncludePoint
+       filter.poly = p
+
+       DS.Close
+       DS.SetFilter( Filter )  ' Filitreyi uygula
+       a = 0
+       if DS.Open then
+         DS.First
+         while not DS.EOF
+           DS.Geometry.Draw(red)
+           a = a + 1
+           DS.Next
+         wend
+         DS.Close
+       end if
+       DS.ResetFilter    ' Filitreyi Kapat
+       set Filter = nothing
+
+       msgbox a & " obje bulundu."
+     wend
+     set p = nothing
+     set c = nothing
+   end with
+
+   set DS = nothing
+End Sub

@@ -1,0 +1,92 @@
+' V0.001 : Plan alanlarýna göre farklý tabakalardaki objelerin oranlanmasý için hazýrlanmýþtýr.
+' plan dýþý amaçlar için de kullanýlabilir.
+Sub Main
+Dim i,ada,bina,adaTabaka,arrType,arrValue,cond,lyChar,aln,j
+adaTabaka = "SINIR_PLANONAMA"  ' Ada Tabakasý
+lyChar = "PL" 'Ada içinde bakýlacak tabakalar için baþlangýç kriteri
+  with Netcad
+    redim arrType(0)
+    redim arrValue(0)
+    aln = 0
+    j = 0
+    set ada = .newobject()
+    .setFilter nothing,array(.foundlayer(adatabaka)),array(opline)
+    while .getNextObject2(ada)
+      set bina = .newobject()
+      .setFilter ada.limits,array(),array(opline)
+      while .getNextObject2(bina)
+        if (bina.tabaka <> .foundlayer(adatabaka)) and (ada.getObjectasPline.inpoly(bina.getObjectasPline.centerofmass)) and inStr(.layerNameOf(bina.tabaka),lyChar) > 0 then
+           cond = checkValInArray(arrType,bina.tabaka)
+           '.drawobject bina,red
+           if cond = -1 then
+             redim preserve arrType(ubound(arrType)+1)
+             redim preserve arrValue(ubound(arrValue)+1)
+             arrType(ubound(arrtype)) = bina.tabaka
+             arrValue(ubound(arrValue)) = abs(bina.getobjectaspline.area)
+             aln = aln + abs(bina.getobjectaspline.area)
+           else
+             arrValue(cond) = arrValue(cond) + abs(bina.getobjectaspline.area)
+             aln = aln + abs(bina.getobjectaspline.area)
+           end if
+         end if
+      wend
+      .resetFilter
+      'alertItall arrType,arrValue,aln
+      writeToFile "",arrType,arrValue,aln,ada.pname,j
+      j = j +1
+      aln = 0
+      redim arrType(0)
+      redim arrValue(0)
+      set bina = nothing
+    wend
+    set ada = nothing
+    .resetFilter
+  end with
+  msgbox "Sonuçlar C:\Sonuclar.TXT dosyasýna yazýldý. "
+End Sub
+
+function alertItall(arrType,arrValue,adaAlan)
+dim dlg,i
+  with netcad
+    set dlg = .newBDialog("Ada Sonuçlarý")
+      for i = 0 to ubound(arrType)
+        if i > 0 then
+          dlg.PutPrompt .layerNameOf(arrType(i)) & " : %" & Round((arrValue(i)*100)/adaAlan,4)
+        end if
+      next
+    if dlg.ShowModal then
+    end if
+  end with
+end function
+
+
+function checkValInArray(arr,val)
+dim i
+  for i = 0 to ubound(arr)
+    if arr(i) = val then
+      checkValInArray = i
+      exit function
+    end if
+  next
+  checkValInArray = -1
+end function
+
+function writeToFile(fName,arrType,arrValue,adaAlan,adaName,cond)
+dim fso ,file,i
+  fName = "C:\Sonuclar.TXT"
+  set fso = CreateObject("Scripting.FileSystemObject")
+  if cond = 0 then
+    set file  = fso.CreateTextFile(fName,false)
+  else
+   set file  = fso.OpenTextFile(fName,8)
+  end if
+  file.WriteLine "ADA NO : " & adaName
+  file.writeLine "--------------------------"
+  for i = 0 to ubound(arrType)
+    if i > 0 then
+      file.WriteLine netcad.layerNameOf(arrType(i)) & " : %" & Round((arrValue(i)*100)/adaAlan,4)
+    end if
+  next
+  file.WriteBlankLines(3)
+  file.close
+end function

@@ -1,0 +1,105 @@
+
+
+'Amaç : Referans yöneticindeki seçili grid dosyalarýnýn VRML'e dönüþtürülerek
+'       IE'de görüntülenmesi. Bu makro'nun doðru çalýþmasý için en az IMPEXP.dll
+'       versiyon 4.0.055 ve IE'de Cortona VRML plugin gerekmektedir. Grid dosyalarýnýn
+'       tamamý ayný projeksiyon sisteminde olmalýdýr.Doku kaplamada kullanýlacak dosyalar
+'       "PNG" ya da "JPG" uzantýlý olmalýdýr.
+'       Cortona VRML plugin, http://www.parallelgraphics.com/ adresinden temin edilebilir.
+'Yazan : Tarkan Kalyoncuoglu
+
+
+
+sub navigate (URL)
+dim ie
+	set ie = CreateObject("internetexplorer.application")
+        ie.Visible=True
+        ie.navigate(URL)
+end sub
+
+
+Sub main
+dim objFSO, xmlDoc, projType, noerr , vrmlIn, vrmlOut, n, i, rs, dirpath, texture, vrmlDir, hdistance, vdistance, scale, directory, rsCheck, brsCheck, refList, resampling
+
+  refList = NCRefman.GetSupportedReferences(Macro_Support_Grid, TRUE)
+  if UBound(reflist) = -1 then
+    msgBox("Referans yöneticisinde yüklü grid dosyasý yok!")
+  else
+    projType = refList(0).Projection.ProjectionType
+    for i = 0 to UBound(refList)
+      if projType <> refList(i).Projection.ProjectionType then
+        msgBox("Referans yöneticisinde yüklü gridlerin hepsi ayný projeksiyon sisteminde olmalýdýr!")
+        exit Sub
+      end if
+    next
+    n = InStrRev(refList(0).Name, "\")
+    dirpath = Left(refList(0).Name, n - 1)
+    set vrmlDir =  Netcad.NewBDialog("Vrml")
+    if projType = PR_GEO then
+      vrmlDir.GetFloat "item1", "1 Derecenin yatayda kaç metreye eþit olduðunu belirtiniz", 84000, 3
+      vrmlDir.GetFloat "item2", "1 Derecenin düþeyde kaç metreye eþit olduðunu belirtiniz", 114000, 3
+    end if
+    vrmlDir.GetFloat "item3", "Yükseklik abartýsý belirtiniz", 1, 1
+    vrmlDir.GetString "item4", "Vrml Dosyasý için dizin adý belirtiniz", dirpath, 200
+    vrmlDir.GetCheck "item5", "Grid tarama aralýðý belirmek istiyorum", 0
+    vrmlDir.GetCheck "item6", "Doku kaplamak istiyorum", 0
+    if vrmlDir.ShowModal then
+      if projType = PR_GEO then
+        hdistance = vrmlDir.ValueByName("item1")
+        vdistance = vrmlDir.ValueByName("item2")
+      end if
+      texture   = vrmlDir.ValueByName("item6")
+      scale     = vrmlDir.ValueByName("item3")
+      directory = vrmlDir.ValueByName("item4")
+      set objFSO = CreateObject("Scripting.FileSystemObject")
+      if not objFSO.FolderExists(directory) then
+        msgBox("Verilen dizin yolu geçerli deðil!")
+        exit Sub
+      end if
+      rsCheck   = vrmlDir.ValueByName("item5")
+      if rsCheck then
+        set rs = Netcad.NewBDialog("Resampling")
+        if projType = PR_GEO then
+          rs.GetFloat "item1", "Grid tarama aralýðý(metre) belirtiniz", 700, 3
+        else
+          rs.GetFloat "item1", "Grid tarama aralýðý(metre) belirtiniz", 10, 3
+        end if
+        if rs.ShowModal then
+          brsCheck = true
+          resampling = rs.ValueByName("item1")
+        else
+          brsCheck = false
+        end if
+      else
+        brsCheck = false
+      end if
+      vrmlIn = "<VRML><LayerMesh><GridFiles>"
+      for i = 0 to UBound(reflist)
+        vrmlIn = vrmlIn & "<FileName>" & refList(i).Name & "</FileName>"
+      next
+      vrmlIn = vrmlIn & "</GridFiles>"
+      if projType = PR_GEO then
+        vrmlIn = vrmlIn & "<HorizontalDistance>" & hDistance & "</HorizontalDistance>"
+        vrmlIn = vrmlIn & "<VerticalDistance>" & vDistance & "</VerticalDistance>"
+      end if
+      vrmlIn = vrmlIn & "<Scale>" & scale & "</Scale>"
+      if brsCheck then
+        vrmlIn = vrmlIn & "<Resampling>" & resampling & "</Resampling>"
+      end if
+      if texture then
+        vrmlIn = vrmlIn & "<Texture>" & "1" & "</Texture>"
+      end if
+      vrmlIn = vrmlIn & "</LayerMesh><Directory>" & directory &  "</Directory></VRML>"
+      vrmlOut = ncxmlserviceman.runxml("NETCAD.VRML", vrmlIn, "")
+      set xmlDoc   = CreateObject("Microsoft.XMLDOM")
+      xmlDoc.async = "false"
+      noerr = xmlDoc.loadXML(vrmlOut)
+      if noerr then
+        navigate(directory & "\" & xmlDoc.documentElement.Text)
+      else
+        msgBox("XMLDOM yükleme hatasý!")
+      end if
+    end if
+  end if
+End Sub
+

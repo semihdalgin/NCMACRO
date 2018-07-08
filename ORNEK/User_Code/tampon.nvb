@@ -1,0 +1,22 @@
+'yazýlarýn etrafýna pline çizer
+
+Sub Main
+Dim o, texto
+
+ with Netcad
+    set texto=.Newobject
+
+        .setfilter nothing, array(), array(otext) ' yazýlarý secen filtre
+    while .GetNextobject2(texto)      
+
+       	  set o=.MakePline(texto.objname, 1, 0, 0, 0, 1, texto.limits.GetAsPline)
+          o.cls=texto.cls
+          o.Objname=texto.objname
+          .Addobject(o)
+
+    wend
+          set o=nothing
+          set texto=nothing
+          .resetfilter
+  end with
+End Sub

@@ -1,0 +1,74 @@
+'TIFTOECW makrosu
+'Açýklama : Makro yalnýzca ECW Compressor progmarý ile birlikte çalýþýr.
+'03/02/2005
+'Barýþ Göral
+'Netcad
+sub main
+dim dlg,inpath,outpath,app,dlgg
+  with netcad
+    set dlg = .newbdialog("TIFF > ECW")
+    dlg.GetFileName "file","Dosya Yeri","C:\Program Files\Earth Resource Mapping\ECW Compressor 2.6\Bin\ecw_compress_free.exe","EXE Dosyalarý|*.exe|Tum Dosyalar|*.*","exe"  ' file filitresi ve default dosya uzantisi ver
+    if dlg.showmodal then
+      if dlg.Valuebyname("file") <> "" then
+        app = dlg.Valuebyname("file")
+      else
+        msgbox "Makrodan Çýktýnýz !!!"
+        exit sub
+      end if
+    end if
+    set dlg = nothing
+    inpath = openDirDialog("Dönüþtürülecek Dosyalarýn Yeri")
+    if inpath <> "" then
+      outpath = openDirDialog("Saklanacak Dosyalarýn Yeri")
+      if outpath <> "" then
+      set dlgg = .newbdialog("TIFF > ECW")
+        dlgg.GetString "app", "ECWCOmpressor", app, 250
+        dlgg.getstring "inPath","Giriþ Klasörü",inPath&"\",250
+        dlgg.getString "outPath","Çýkýþ Dosyalarý",outpath&"\",250
+        if dlgg.showmodal then
+          ConvertFiles dlgg.ValueByName("inpath"),dlgg.ValueByName("outpath"),dlgg.ValueByName("app")
+        end if
+        set dlgg = nothing
+      else
+        msgbox "Makrodan Çýktýnýz !!! Saklanacak Dosyalar için bir yer seçiniz."
+      end if
+    else
+      msgbox "Makrodan Çýktýnýz !!! Dönüþtürülecek Dosyalarýn Yerini seçiniz"
+    end if
+  end with
+end sub
+
+function openDirDialog(t)
+dim shell,folder,filePath
+  Set shell = CreateObject("Shell.Application")
+  Set folder = shell.BrowseForFolder(&H0,t,&H4031,&H0011)
+  on error resume next
+  openDirDialog = folder.ParentFolder.ParseName(folder.title).Path
+end function
+
+
+sub ConvertFiles(inpath,outpath,app)
+dim shell,path,fname,fpath
+dim dir,fSo,Count,file,inFile,outfileL,outfile
+  set shell = CreateObject("WScript.Shell")
+  set fSo = CreateObject("Scripting.FileSystemObject")
+  set dir = fso.GetFolder(InPath)
+  set Count = dir.Files
+  for each file in Count
+    with netcad
+      if not .escpressed then
+      infile = file.name
+      outFileL = split(file.name,".",-1,1)
+      outfile = outfileL(0)
+      shell.run """" & app & """" & " " & inpath&infile &" -o " & outpath&outfile &" -c 20 -rgb -nowait",1,true
+      else
+        msgbox "Makro Kullanýcý Tarafýndan Bitirildi !!!"
+      end if
+    end with
+  Next
+  set shell = nothing
+  set fso = nothing
+end sub
+
+
+

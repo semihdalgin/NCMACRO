@@ -1,0 +1,32 @@
+
+' Amaç : Projedeki Referanslardan Grid Desteði olanlarý bulur
+'        Secilen noktalarin kotunu gosterir
+' Yazan: Kamran Özcan 
+' Tarih: 16.09.2004
+
+Sub Main
+dim Reflist,i,Grid,c,Z
+
+  ' Grid Desteði olan Aktif referanslari iste ve adlarini goster
+  RefList = NCRefman.GetSupportedReferences(Macro_Support_Grid, TRUE)
+  for i = 0 to UBound(RefList)
+    msgbox RefList(i).DisplayName
+    msgbox "Projection Type=" & RefList(i).Projection.ProjectionType
+  next
+
+  ' Bunlardan ilki uzerinde calis
+  if UBound(RefList) >=0 then
+    set Grid = RefList(0).Grid  ' Referanstan Grid nesnesi iste
+
+    msgbox "Grid Minimum Kot = " & Grid.MinValue
+    msgbox "Grid Maximum Kot = " & Grid.MaxValue
+    msgbox "Grid Geçersiz Deger = " & Grid.NoData
+
+    set c = Netcad.Newc(0, 0, 0)
+    while Netcad.SelectPoint("Nokta göster", c, -1)
+      Z = Grid.GetValue(c)
+      msgbox "Noktanýn Kotu = " & Z
+    wend
+  end if
+
+End Sub

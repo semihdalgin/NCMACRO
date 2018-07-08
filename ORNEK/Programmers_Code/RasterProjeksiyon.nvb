@@ -1,0 +1,13 @@
+' Amac  : Raster Projeksiyon donusumu
+' Tarih : 02.08.2005
+' Yazan : Kamran Özcan
+
+Sub Main
+dim pc
+
+  set pc = Netcad.NewProjection
+  pc.ProjectionType = PR_GEO
+  pc.Datum = DATUM_WGS84
+
+  msgbox Netcad.RasterProjection("D:\Data\proje\dre\g50a1.ECW","C:\deneme.ecw",pc, 0,0,0)
+End Sub

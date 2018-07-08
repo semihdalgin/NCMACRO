@@ -1,0 +1,26 @@
+'
+' Dil  : Visual Basic
+' Amaç : SetFilter, ResetFilter, Newobject, GetNextObject2 kullanimi
+'        Secilen bolgedeki ve tabakadaki pline objelerini bulmak
+' Macro Versiyon : 1.2r4
+
+Sub Main
+Dim o, w, layer1, layer2
+  with Netcad
+    layer1 = .CreateLayer("TESTLAYER1", yellow)
+    layer2 = .CreateLayer("TESTLAYER2", blue)
+    set w = .newworld(0,0,0,0)
+    if .GetRegion(w) then
+        set o = .Newobject           ' Gecici obje yarat
+        .SetFilter w, array(layer1, layer2), array(opline)
+        while .GetNextObject2(o)       ' Eger yukardaki kurala uyan obje varsa
+                                       ' onu bizim objenin icine doldur
+           msgbox o.pname    ' gelen objenin adini goster
+        wend
+        set o = nothing              ' Gecici objeyi hafizadan sil
+        .ResetFilter                 ' Filitre Uygulama.
+    end if
+    set w = nothing
+  end with
+End Sub
+

@@ -1,0 +1,35 @@
+NC_Makro
+	&Tabaka
+		Seçilen Obje >Kapat (C:\NETCAD_N5.0.023\MODUL\NCMACRO\TABAKA\SecilenTabakaKapat.nvb) ()
+		Seçilen Harici>Kapat (C:\NETCAD_N5.0.023\MODUL\NCMACRO\TABAKA\SecilenTabakaHaricKapat.nvb) ()
+		Tüm Tabaka > Aç (C:\NETCAD_N5.0.023\MODUL\NCMACRO\TABAKA\TumTabakalariAc.nvb) ()
+		Biçim Kopyala (C:\NETCAD_N5.0.023\MODUL\NCMACRO\TABAKA\BicimKopyala.nvb) ()
+		Ýki Nokta Arasý Mesafe (C:\NETCAD_N5.0.023\MODUL\NCMACRO\TABAKA\NCDD_XMLSERVICE_CONVERTPROJECTION.NVB) ()
+	&Ref. Yöneticisi
+		Ref. Aðacý Sil (C:\NETCAD_N5.0.023\MODUL\NCMACRO\REFMAN\RefmanAgacýnýSil.nvb) ()
+	&Planlama
+		Taks/Kaks Hesabý (C:\NETCAD_N5.0.023\MODUL\NCMACRO\PLAN\takskaks.nvb) ()
+		Donatýlarý Oranla (C:\NETCAD_N5.0.023\MODUL\NCMACRO\PLAN\planfonksiyonalanoranla.nvb) ()
+		Tadilat Yap (C:\NETCAD_N5.0.023\MODUL\NCMACRO\PLAN\Plan_Tadilat.nvb) ()
+		Nüfus Projeksiyonu (C:\NETCAD_N5.0.023\MODUL\NCMACRO\PLAN\nufus.nvb) ()
+		Kesit Çiz (C:\NETCAD_N5.0.023\MODUL\NCMACRO\PLAN\REFMAN_VISIBILITY.NVB) ()
+		Yoðunluk Hesabý (C:\NETCAD_N5.0.023\MODUL\NCMACRO\PLAN\yogunluk.nvb) ()
+	Gis Macro
+		Spatialden Ncz'ye Dönüþüm (C:\NETCAD_N5.0.023\MODUL\NCMACRO\GIS\spatial_to_ncz_pline.nvb) ()
+	Yardýmcý
+		Çift Obje Ayýkla (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\CIFTOBJEAYIKLANVB.NVB) ()
+		Yerkotu Noktalarýndan Kotlu Nokta Üretimi (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\CDogruVeYaziyaKotNoktalariUretilmesi.nvb) ()
+		Çoklu Doðruya Kot Verme (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\çokludoðrukotver.nvb) ()
+		Proje Düzenle (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\projeDuzenle.nvb) ()
+		Ncz/Dxf Düzenle (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\NCZ2DXFDuzenle.nvb) ()
+		Çift Yazýlý Alan Ayýkla (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\içinde_çift_yazý_bulunan_alan_ayýkla.nvb) ()
+		Alan Ýçindeki Yazýyý Kalýnlýða Ata (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\AlanIcindekiYazi2Kalinlik.nvb) ()
+		Yazýdan Nokta Üret (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\yazidanNoktaOlustur.nvb) ()
+		Alan Objesi Merkezine Nokta Atama (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\alan_objesi _merkezi_nokta_üretme.nvb) ()
+		Alan Ýçindeki Yazýyý Adýna Ata (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\icindekiyazi2objeadi.nvb) ()
+		Adýný VT Koduna Ata (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\ADI_2_VTKOD.nvb) ()
+		VT Kodunu Adýna Ata (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\VTKOD_2_ADI.nvb) ()
+		Ýçindeki Yazýyý VT Koduna Ata / Tabakalý (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\ICINDEKIYAZI_VT_KODATA11.nvb) ()
+		Ýçindeki Yazýyý VT Koduna Ata / Tabakasýz (C:\NETCAD_N5.0.023\MODUL\NCMACRO\YARDIMCI\ÝÇÝNDEKÝ YAZI_AD_ANAH.nvb) ()
+Üsküdar->NETCAD/KBS
+	Ara Bul --> (D:\PROJELER\USKUDAR\USKUDAR\MAKRO\uskudar.nvb) ()

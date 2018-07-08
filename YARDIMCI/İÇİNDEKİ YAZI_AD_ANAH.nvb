@@ -1,0 +1,36 @@
+
+' Yazan : 
+' Tarih : 09.07.2005
+' Açýklama : 
+
+Sub Main
+Dim i, o , tbk , tbk1, p, by, pln
+  with Netcad
+    'tbk =  .FoundLayer("0")
+    tbk1 = .FoundLayer("1")
+    .SetFilter nothing, array() , array (opline)
+    do
+      set o = .GetNextObject
+      i =  .CurObjPos
+      if o  is nothing then
+    exit do
+      end if
+        .SetFilter .ObjectExtends(o), array (tbk1), array (otext)
+          Do
+         set by = .GetNextObject
+         if by is nothing then
+           exit do
+          else
+           set pln=.GetPlineExt(o)
+           if pln.InPoly(by.p1) then
+            .DrawObject o, RED
+             o.objname= by.s
+             .putobject i, o
+           end if
+         end if
+       Loop
+        .resetfilter
+    loop
+    .ResetFilter
+  end with
+End Sub

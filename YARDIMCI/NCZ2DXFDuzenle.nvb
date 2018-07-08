@@ -1,0 +1,82 @@
+' TARIH         : 24.01.2005
+' AMAÇ          : Proje-Farklý Kaydet-DXF ile yazýlan dxf dosyalarýnýn
+'                 Autocad ortamýnda açýlmasýnda yaþanan sorunlarý giderir.
+'                 NCZ dosyayý sorunsuz olarak saklanmasý için düzenler.
+'
+' GEREKLÝLÝKLER : NCMacro 4.0.015 ve üstü versiyon.
+'
+' HAZIRLAYAN    : Barýþ Göral
+' NetCAD Ýstanbul Bölge Müdürlüðü
+'
+'
+sub main
+  'obje Rengi2TabakaRengi
+  objCol2LayerCol
+  'Tabaka Rengi Kontrllü
+  setLayerColor
+  'Tabaka Adý Kontrolü
+  CorrectLayerNames
+  'Blok Adý Kontrolü
+  checkBlockNames
+  netcad.netcadcommand "PROJECT CLEAN 1,1,1,1,1,1,1"
+  msgbox "Proje Düzenlendi..."
+end sub
+
+sub SetLayerColor
+dim i,j
+  with nclayermanager
+    for i = 0 to .numlayer-1
+      if .layer(i).color = 80 or _
+         .layer(i).color = 15 or _
+         .layer(i).color = 0 or _
+         .layer(i).color = 16  then
+         .layer(i).color =  4
+     end if
+    next
+  end with
+end sub
+
+sub objCol2LayerCol
+dim i,obj
+  with netcad
+    set obj = .getobject(i)
+    if obj.renk <> 0 then
+      obj.renk = 0
+    end if
+    set obj = nothing
+  end with
+end sub
+
+sub CorrectLayerNames
+dim n,i
+  with nclayermanager
+    for i = 0 to .numlayer-1
+      n = ucase(.layer(i).name)
+      n = replace(n,"Ü","U")
+      n = replace(n,"Ð","g")
+      n = replace(n,"Ý","I")
+      n = replace(n,"ý","I")
+      n = replace(n,"Þ","s")
+      n = replace(n,"Ç","c")
+      n = replace(n,"Ö","o")
+      n = replace(n,".","_")
+      .layer(i).name = UCase(n)
+    next
+  end with
+end sub
+
+sub checkBlockNames
+dim i,obj
+  with netcad
+    .setfilter nothing,array(),array(oblock)
+    set obj = .newobject
+    while .getnextobject2(obj)
+     if obj.pname = "" then
+       msgbox "Ýsimsiz Blok Var. Lütfen Ýsimsiz Olan Blok Objesine Bir Ýsim Veriniz..."
+       .resetFilter
+       exit sub
+     end if
+    wend
+    .resetfilter
+  end with
+end sub

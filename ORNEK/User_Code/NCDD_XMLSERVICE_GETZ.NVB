@@ -1,0 +1,35 @@
+
+' Amac : NETCAD.GETZ XML Servisi kullanim ve GML çevrim örneði
+'        Bu servisin çalýþmasý için projedeki bir Grid Referanstan yada
+'        Netcad üçgen objeleri içinde bir nokta seçmek gerekli.
+
+' Yazan: Kamran Özcan 
+' Tarih: 16.09.2004
+
+Sub Main
+dim INPUTXML, OUTXML, c, GC, OC, o
+  with Netcad
+    set c = .newc(0,0,0)
+    while .SelectPoint("Kot ölçmek için nokta göster", c, -1)
+
+      ' Bu serviste Input ve Output XML yapisi tamamen GML oldugu icin
+      ' GML Converter kullanarak objeleri donustur
+      set GC = .NewGMLConverter
+
+      INPUTXML = GC.Coor2GML(c)    ' input XML Datayi hazirla
+
+      ' Servisi Cagir
+      OUTXML = NCXMLServiceMan.RunXML("NETCAD.GETZ", INPUTXML, "")
+
+      set OC = GC.GML2Netcad( OUTXML )
+
+      if not OC is nothing then
+        if OC.NE > 0 then
+          set o = .newobject
+          OC.GetObject 0, o, nothing   ' Sonuc 1 tane nokta objesi gelmeli
+          msgbox o.p1.z                ' Bulunan Kotu ekrana raporla
+        end if
+      end if
+    wend
+  end with
+End sub

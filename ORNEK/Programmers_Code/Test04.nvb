@@ -1,0 +1,17 @@
+'
+' Dil  : Visual Basic
+' Amaç : Ekrandan Nokta Seçmek.
+'        Newc ve SelectPoint kullanim ornegi
+'
+Sub Main
+Dim c
+  with Netcad
+    set c = .newc(0,0,0)    ' Gecici nokta yarat
+    while .SelectPoint("Nokta için bir Yer Göster",c,-1)  'Nokta sectir
+      msgbox c.y            ' Secilen nokta bizim c objesinin icine geldi.
+                            ' ekranda mesaj olarak Y koordinatini goster.
+    wend                    ' Kullanici iptal edene kadar devam et.
+    set c = nothing         ' Gecici noktayi yok et.
+  end with
+end sub
+

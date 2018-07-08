@@ -1,0 +1,35 @@
+'
+' Dil  : Visual Basic
+' Amaç : Istenen Siniftaki Objeleri Istenen Tabakaya Almak
+'        ve NewBDialog kullanim ornegi.
+Sub Main
+Dim BD, i, sinif, Tabaka, TabNo, o
+
+  set BD = Netcad.NewBDialog("")                 ' yeni dialog yarat
+  BD.GetString  "item1","Sýnýf", "", 15        ' Yazi iste. en fazla 15 karakter olsun
+  BD.GetString  "item2","Tabaka", "", 15        ' Yazi iste. en fazla 15 karakter olsun
+  if BD.showmodal then
+    'MsgBox "Sinif = " & BD.ValueByName("item1")      ' kullanicinin girdigi degerleri goster
+    'MsgBox "Tabaka = " & BD.ValueByName("item2")
+
+    Sinif =  BD.ValueByName("item1")
+    Tabaka = BD.ValueByName("item2")
+
+    TabNo = Netcad.CreateLayer(Tabaka, red)
+
+    for i = 0 to Netcad.numobject-1       ' projedeki tum objeleri sirayla tara
+        set o = Netcad.getobject(i)         ' i. objeyi al
+        if o.cls = Sinif then
+          o.Tabaka = TabNo
+          Netcad.putobject i,o              ' objeyi yenile
+          Netcad.drawobject o, -1          ' objeyi ciz
+        end if
+        set o = nothing               ' obje icin aldigimiz memory'i geri ver
+    next
+
+    MsgBox Sinif & " Objeleri " & Tabaka & " Tabakasina Alindi"
+
+  end if
+  set BD = Nothing
+End sub
+

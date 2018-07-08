@@ -1,0 +1,10 @@
+//
+// Dil   : Java
+// Amaç  :Mesaj verme ornegi.
+//
+
+function Main()
+{
+  Netcad.Message(NCM_INFO,'Hello World.','Bu Bir Java Script Denemesi.');
+}
+

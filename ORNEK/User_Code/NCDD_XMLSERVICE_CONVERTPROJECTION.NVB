@@ -1,0 +1,137 @@
+
+' Amaç : CONVERTPROJECTION XML servisi kullanýmý 
+'        Projenin projeksiyonu cinsinden secilen iki nokta arasindaki mesafeyi
+'        Farklý bir projeksiyon cinsinden raporlamak
+'        Örneðin: iki geographic coordinatin UTM cinsinden mesafesini metre olarak bulmak.
+
+' Not  : Bu örneðin çalýþmasý için Projenin projeksiyonu secilmiþ olmalý (örneðin Coðrafi)
+' Yazan: Kamran Özcan 
+' Tarih: 16.09.2004
+
+sub main
+dim dlg
+dim inPr,inDat,inZone,inProjParam,outPr,outDat,outZone
+  with netcad
+    set dlg = .newbdialog("PROJECTION > PROJECTION MESAFE")
+    dlg.getCombo "inProj","Girdi Projeksiyonu",createProjList,0
+    dlg.getcombo "inDatum","Girdi Datumu",createDatumList,0
+    dlg.getString "inZone","Utm için Zone (derece)","",3
+    dlg.getCheck "inProjParam","Girdi Olarak Projenin Proj. Kullan",0
+    dlg.getCombo  "outProj","Çýktý Projeksiyonu",createProjList,0
+    dlg.getCombo  "outDatum","Çýktý Datumu",createDatumList,0
+    dlg.getString "outZone","Utm için Zone (derece)","",3
+    if dlg.showmodal then
+      inPr  = getProjection(dlg.valueByName("inProj"))
+      inDat = getDatum(dlg.ValueByName("inDatum"))
+      if isNumeric(dlg.valuebyname("inZone")) then
+        inZone = dlg.valuebyname("inZone")
+      else
+        inZone = 30
+      end if
+      inProjParam = dlg.ValueByName("inProjParam")
+
+      outPr  = getProjection(dlg.ValueByName("outProj"))
+      outDat = getDatum(dlg.ValueByName("outDatum"))
+      if isNumeric(dlg.valuebyname("outZone")) then
+         outZone = dlg.valuebyname("outZone")
+      else
+         outZone = 30
+      end if
+      convertProjLength inPr,inDat,inZone,inProjParam,outPr,outDat,outZone
+    end if
+  end with
+end sub
+
+Sub convertProjLength(inPr,inDat,inZone,inProjParam,outPr,outDat,outZone)
+dim INPUTXML, OUTXML, c1,c2, GC, OC, o, InProj, OutProj, GML, WKT
+  with Netcad
+    set c1 = .newc(0,0,0)
+    set c2 = .newc(0,0,0)
+    while .SelectPoint("Projeden Mesafe ölçmek için birinci noktayý göster", c1, -1) and _
+          .SelectPoint("Projeden Mesafe ölçmek için ikinci  noktayý göster", c2, -1)
+
+      ' NCDD.CONVERTPROJECTION XML Servisine parametre olarak verilecek INPUTXML hazirlaniyor...
+      ' önce noktalari bir listeye doldur
+      set OC =  .NewCollection
+      set o = .MakePoint(c1, "", "", 0)
+      OC.AddObject o, -1, nothing
+      set o = .MakePoint(c2, "", "", 0)
+      OC.AddObject o, -1, nothing
+
+      ' sonra noktalardan GML yap
+      set GC = .NewGMLConverter
+      GML = GC.Netcad2GML( OC )
+
+      ' Aktif Projenin Projeksiyonunu ögren
+      set InProj = .NewProjection
+      if inProjParam = 1 then
+        InProj.GetFromCurrentProject
+      else
+        inProj.ProjectionType = inPr
+        inProj.Datum          = inDat
+        inProj.Zone           = inZone
+      end if
+      ' Sonucta istenen Projeksiyonu Belirle
+      set OutProj = .NewProjection
+      OutProj.ProjectionType = outPr
+      OutProj.Datum          = outDat
+      OutProj.Zone           = outZone
+      WKT = XMLStartTag("WKT") & OutProj.GetAsWKT & XMLEndTag("WKT")
+
+      ' Servis XML yapisini tamamla
+      INPUTXML =  XMLStartTag("CONVERTPROJECTION") & GetNETCAD_GML(GML,InProj) & WKT & XMLEndTag("CONVERTPROJECTION")
+
+      ' Servisi Cagir
+      OUTXML = NCXMLServiceMan.RunXML("NCDD.CONVERTPROJECTION", INPUTXML, "")
+
+      ' Sonucta Bize gelen OUTXML yapýsý içinde hazýr bulunan <totalDistance> elamanýna ulaþýp
+      ' Noktalar arasindaki mesafeyi öðrenebiliriz
+      ' Ýstenirse Çevrimi yapýlan noktalarýn koordinat bilgilerinede benzer þekilde
+      ' Ulaþabilirsiniz.
+      ReportDistance OUTXML
+    wend
+  end with
+End sub
+
+Sub ReportDistance(OUTXML)
+dim XML, distXML, d
+   set XML = CreateObject("Microsoft.XMLDOM")
+   XML.async = false
+   XML.loadXML OUTXML
+   set distXML = XML.documentElement.selectSingleNode("/CONVERT_PROJECTION/NETCAD_GML/totalDistance")
+   d = distXML.text
+   msgbox "Mesafe = " & d & " m."
+End sub
+
+function createProjList
+dim projList
+  projList = "Coðrafi"&"|"&"UTM 3 Derecelik"&"|"&"UTM 6 Derecelik"
+  createProjList = projList
+end function
+
+function getProjection(i)
+  if i = 0 then
+    getProjection = PR_GEO
+  elseif i= 1 then
+    getProjection = PR_UTM3
+  elseif i = 2 then
+    getProjection = PR_UTM
+  end if
+end function
+
+function createDatumList
+dim datumList
+  datumList = "ED50"&"|"&"WGS84"&"|"&"GRS80"
+  createDatumList = datumList
+end function
+
+function getDatum(i)
+  if i = 0 then
+    getDatum = DATUM_TUR_1
+  elseif i= 1 then
+    getDatum = DATUM_WGS84
+  elseif i = 2 then
+    getDatum = DATUM_GRS80
+  end if
+end function
+

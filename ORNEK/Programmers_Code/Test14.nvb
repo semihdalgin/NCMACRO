@@ -1,0 +1,18 @@
+'
+' Dil  : Visual Basic
+' Amaç : Modullerdeki COM objelerine ulasim
+'
+Sub Main
+dim foto1
+  set foto1 = createobject("TestCOM.MyTestObje")
+    'foto1.SayHello
+    foto1.SetNetcad(true)
+    'foto1.Message("DENEME")  ' bu mesaji netcad soyluyor
+    foto1.ShowMyForm
+    while foto1.formavail
+      foto1.processmessages
+    wend
+    foto1.SetNetcad(false)
+  set foto1 = nothing
+end sub
+

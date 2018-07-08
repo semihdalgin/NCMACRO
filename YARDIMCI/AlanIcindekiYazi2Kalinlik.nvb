@@ -1,0 +1,129 @@
+
+'TARIH : 27/12/2001    V1.00
+'AMAÇ  : 3D DE BINALARI GORUNTULEMEK AMACI ILE KULLANILIR
+'        BINA MESKUN KAPALI ALANI ICINDEKI BINA KATADEDI YAZISINI VERILEN DEGERLE CARPARAK
+'        OBJENIN KALINLIK BILGISINE YAZAR
+'GIRDILER : KAPALI_ALAN-COKLUDOGRU-BINA_MESKUN TABAKASINDA
+'           TEXT - YAZI- BINA_KATADEDI TABAKASINDA
+'           KAT YUKSEKLIGI - 2.75 (ortalama bir katýn yukseklik degeri)
+'UAYARILAR : Binalarýn tabakalarýný katadedi degerine gore degiþtirir.
+'18/01/2005 : Düzenlediði alanlara zoom yapma eklendi ' Barýþ Göral
+' NetCAD Ýstanbul Bölge Müdürlüðü
+
+Function Intersect_Lines(x1,y1, x2, y2,u1, v1, u2, v2)
+
+dim a1,b1,c1,a2,b2,c2,det_inv
+dim m1,m2
+dim xi,yi
+dim p
+
+if (x2-x1)=0 then b1=1e+10 else b1 = (y2-y1)/(x2-x1)
+if (u2-u1)=0 then b2=1e+10 else b2 = (v2-v1)/(u2-u1)
+
+a1 = y1-b1*x1
+a2 = v1-b2*u1 
+xi = - (a1-a2)/(b1-b2)
+yi = a1+b1*xi
+
+if (x1-xi)*(xi-x2)>=0 AND (u1-xi)*(xi-u2)>=0 AND _
+   (y1-yi)*(yi-y2)>=0 AND (v1-yi)*(yi-v2)>=0  then
+    Intersect_lines=True
+   else
+    Intersect_lines=False
+end if
+End Function
+
+'---------------------------------------------------------------------------------
+Function inside(p , poly)
+Dim i, j, count
+Dim lt, lp
+Dim c1,c2
+set c1=netcad.NewObject
+set c2=netcad.NewObject
+   count = 0
+   j = 0
+   c2.p1.x=p.x
+   c2.p1.y=p.y
+   c2.p2.x=999099999999999999999999999
+   c2.p2.y=999999099999999999999999999
+   For i = 0 To poly.num-1
+       c1.p1 = poly.Cor(i)
+       if i=poly.num-1 then c1.p2 = poly.Cor(0) else  c1.p2 = poly.Cor(i + 1)
+       If intersect_Lines (c1.p1.x,c1.p1.y,c1.p2.x,c1.p2.y, c2.p1.x,c2.p1.y,c2.p2.x,c2.p2.y) Then
+          count = count + 1
+          end if
+   Next
+   inside = (count Mod 2 <> 0)
+End Function
+
+'----------------------------------------------------------------------------------------------------
+SUB Main
+DIM o,ss,b,h,i,d,ds ,j,mes,mysqr,c1,c2,reg ,cnum, lnum
+Dim BD
+Dim AdaTabaka, ParselTabaka, AdaNoTabaka, ParselNoTabaka, KatYuksekligi
+Dim Ada
+Dim world
+
+with netcad
+for j=1 to 50
+' .CreateLayer j, red
+next
+
+
+
+'--------------------------- Dialog kutusunda deðiþkenleri sor ---------------------------------------
+  set BD = .NewBDialog("Ada/Parsel üret V.1.00 27/09/2001")          ' yeni dialog yarat
+  BD.GetString  "Ada","Alan Poligon Tabakasý", "BINA_MESKUN", 15
+  BD.GetString  "AdaNo","Yazý Tabakasý", "BINA_KATADEDI", 15
+  BD.GetFloat "KatYuksekligi","Kat Yüksekliði",2.75,2
+
+  BD.PutPrompt  "Tabaka isimlerini büyük harfle yazýn !"             ' Aciklama Yazdir.
+  BD.PutPrompt  " "
+
+  KatYuksekligi=BD.ValueByName("KatYuksekligi")
+
+  if BD.showmodal then
+    AdaTabaka=.FoundLayer(BD.ValueByName("Ada"))
+    AdaNoTabaka=.FoundLayer(BD.ValueByName("AdaNo"))
+    if  AdaTabaka=-1 or AdaNoTabaka=-1 then
+      msgbox "girdiðiniz tabakalardan biri veya birkaçý projede bulunamadý !!!"
+      Exit Sub
+    End if
+  Else
+    Exit Sub
+  End if
+  set BD = Nothing
+
+'-------------------------Dialog Son-------------------------------------------------
+
+'******************* Poligona içindeki yazýyý ata *************
+for i = 0 to .numobject-1       ' projedeki tum objeleri sirayla tara
+        .BackMessage
+        .SetMessage i
+        set ada = .getobject(i)         ' i. objeyi al
+        if ada.tag = opline and ada.tabaka=AdaTabaka  then        ' Coklu dogrumu ?
+          .DrawObject ada, blue
+          .SetFilter .ObjectExtends(ada), array(AdaNoTabaka), array(otext)          'Filitre uygula
+          Do
+            set o = .GetNextObject   ' Yukardaki Kurala uyan bir sonraki objeyi getir
+            if o is nothing then     ' Eger kurala uyan obje kalmadiysa sonuc "nothing" doner
+              exit do                ' Bu durumda donguyu durdur
+              else
+              if inside(o.p1, .GetPlineExt(ada)) then
+                 if o.s>50 then msgbox "Bulunan yazi deðeri= " & o.s
+                 set world = ada.limits
+                 .SetCurrentWindow world, true
+                 ada.tabaka=.FoundLayer(o.s)
+                 ada.thicknes=o.S*KatYuksekligi
+                 .PutObject i, ada
+              end if
+            end if
+            Loop
+          .ResetFilter                ' Filitre uygulamayi birak.
+        end if
+        set o = nothing               ' obje icin aldigimiz memory'i geri ver
+next
+set ada=nothing
+
+end with
+END SUB

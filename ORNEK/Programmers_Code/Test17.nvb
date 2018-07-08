@@ -1,0 +1,29 @@
+'
+' Dil  : Visual Basic
+' Amaç : Secilen Objeleri kesistirmek
+'        NewSelectStatus, SelectObjectInstant kullanimi
+'
+Sub Main
+Dim ss,o, o1, o2, ni, i, inta
+  with netcad
+    set ss = .NewSelectStatus   ' Anlik Secim objesi yarat
+    while .SelectObjectInstant("2 tane obje Seç",2,array(oline, opline),ss)  'Dogru objesi sec
+      set o1 = ss.objects(0)         ' Secim objesinin ilk objesini al
+      set o2 = ss.objects(1)         ' Secim objesinin ikinci objesini al
+      set inta = .newpoly
+      ni = .IntersectObjects(o1, o2, inta)
+      if ni > 0 then
+        for i = 0 to ni-1
+          set o = .MakeSembol(inta.cor(i), 5, 0, 2, 0, 0)
+          .AddObject(o)
+          set o = nothing
+        next
+      end if
+      set inta = nothing
+      set o2 = nothing
+      set o1 = nothing
+    wend
+    set ss = nothing
+  end with
+end sub
+

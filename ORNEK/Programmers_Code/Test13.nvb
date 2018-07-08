@@ -1,0 +1,11 @@
+'
+' Dil  : Visual Basic
+' Amaç : Modullerdeki COM objelerine ulasim
+'
+Sub Main
+dim foto1
+  set foto1 = createobject("Fotocad.FotocadCOM")
+    foto1.method1
+  set foto1 = nothing
+end sub
+

@@ -1,0 +1,25 @@
+
+'Çakýþan yazýlarý bulmak
+
+Sub Main
+Dim i,j,o,p,obj
+   with Netcad
+      set obj = .Newobject
+      for i = 0 to .numobject-1       ' projedeki tum objeleri sirayla tara
+        set o = .getobject(i)         ' i. objeyi al
+        if o.tag = otext then        ' yazý mý ?
+          .SetFilter o.Limits, array(),array()
+          while .GetNextObject2(obj)
+             if obj.tag=otext then
+                .drawobject o, Red
+                o.tabaka=1
+             end if
+          wend
+          .ResetFilter
+        end if
+        set o = nothing               ' obje icin aldigimiz memory'i geri ver
+      next
+   end with
+End Sub
+
+

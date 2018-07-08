@@ -1,0 +1,83 @@
+
+   ' AMAÇ : Kapalý alan Ýçindeki yazýyý GIS baðlantý anahtarý deðiþkenine atar.
+   ' GÝRDÝ : Kapalý alan - Çokludogru - KAD_PARSEL_PL
+   '         TEXT - YAZI - KAD_PARSEL_NO
+   'UYARI : Oncelikle parsel içindeki çift yazýlar temizlenmiþ olmalýdýr.
+'----------------------------------------------------------------------------------------------------
+SUB Main
+DIM o,ss,b,h,i,d,ds ,j,mes,mysqr,c1,c2,reg ,cnum, lnum
+Dim BD
+Dim AdaTabaka, ParselTabaka, AdaNoTabaka, ParselNoTabaka
+Dim Ada
+Dim s,iy,by,mode,parsel,pln
+
+
+with netcad
+  '--------------------------- Dialog kutusunda deðiþkenleri sor ---------------------------------------
+  set BD = .NewBDialog("Ýçindeki Yazýyý Vt Koduna Ata")          ' yeni dialog yarat
+  BD.GetString  "Parsel","Poligon Tabakasý", "KAD_PARSEL_PL", 15
+  BD.GetString  "Yazi","Yazý Tabakasý", "KAD_PARSEL_NO", 15
+  BD.PutPrompt  "Tabaka isimlerini büyük harfle yazýn !"             ' Aciklama Yazdir.
+  BD.PutPrompt  " "
+  if BD.showmodal then
+    ParselTabaka=.FoundLayer(BD.ValueByName("Parsel"))
+    ParselNoTabaka=.FoundLayer(BD.ValueByName("Yazi"))
+    'if  ParselTabaka=-1 or ParselNoTabaka=-1 then
+      'msgbox "girdiðiniz tabakalardan biri veya birkaçý projede bulunamadý !!!"
+      'Exit Sub
+    'End if
+   Else
+    Exit Sub
+  End if
+  set BD = Nothing
+  '-------------------------Dialog Son-------------------------------------------------
+  '******************* Adaya içindeki yazýyý ata *************
+  for i = 0 to .numobject-1      ' projedeki tum objeleri sirayla tara
+    .BackMessage
+    .SetMessage i
+    set parsel = .getobject(i)         ' i. objeyi al
+    if parsel.tag = opline  then        ' Coklu dogrumu ?
+      .DrawObject Parsel, blue
+      .SetFilter .ObjectExtends(Parsel), array(ParselNoTabaka), array(otext)          'Filitre uygula
+       Do
+         set by = .GetNextObject   ' Yukardaki Kurala uyan bir sonraki objeyi getir
+         if by is nothing then     ' Eger kurala uyan obje kalmadiysa sonuc "nothing" doner
+           exit do                ' Bu durumda donguyu durdur
+          else
+           set pln=.GetPlineExt(parsel)
+           if pln.inPoly(by.p1) then
+            .DrawObject Parsel, RED
+             parsel.OBJname=by.s
+             .putobject i,parsel
+           end if
+         end if
+       Loop
+       .resetfilter
+    end if
+    set by = nothing               ' obje icin aldigimiz memory'i geri ver
+  next
+  set parsel=nothing
+  .BackMessage
+
+  .NetcadCommand("REGEN")
+end with
+END SUB
+
+
+function CheckLAyerName(param,ly)
+dim i,arr
+
+  with ncLayerManager
+    for i = 0 to .NumLayer-1
+      if inStr(1,.layer(i).Name,param) <> 0 and netcad.LAyerNameOf(ly)=.layer(i).name then
+        CheckLAyerName = 1
+        exit function
+      else
+        CheckLAyerName = 0
+      end if
+    next
+  end with
+end function
+
+
+

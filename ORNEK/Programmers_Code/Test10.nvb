@@ -1,0 +1,11 @@
+'
+' Dil  : Visual Basic
+' Amac : En basit obje yaratimi
+'
+Sub Main
+  with Netcad
+    .AddObject .MakeLine(.newc(0,0,0), .newc(100,100,0), .CreateLayer("TABAKA1",yellow), 0, 0)
+    .AddObject .MakeCircle(.newc(200,200,0), 50, .CreateLayer("TABAKA2",red), 0, 0)
+  end with
+End Sub
+

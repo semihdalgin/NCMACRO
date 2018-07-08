@@ -1,0 +1,17 @@
+
+' Yazan :Hasan Mutlu hasan@hasanmutlu.com
+' Tarih : 25.01.2007
+' Açýklama : 
+
+Sub Main
+Dim c
+  with Netcad
+       .setmessage "Proje duzenleniyor"
+       .NetcadCommand "PROJECT CLEAN 1,1,1,1,1"
+
+	msgbox "Islem basari ile gerceklesti",,"Proje Duzenle"
+ .setmessage ""
+  end with
+end sub
+
+
