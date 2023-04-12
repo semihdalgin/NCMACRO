@@ -1,16 +1,15 @@
-' Yazan : Erc¸ment KORKMAZ
 ' Tarih : 18.11.2005
-' AÁ˝klama : spatial olan bir tablonun obje haline getirilerek  tabaka bazl˝ tematik yapma
+' A√ß√Ωklama : spatial olan bir tablonun obje haline getirilerek  tabaka bazl√Ω tematik yapma
 Sub Main
 Dim i, ds, con, a, b, c , ta, s, o , po, obj, snf, oi, bd, co, col
 a = 0
 c = 0
 s = 0
   with Netcad
-    set bd = .NewBDialog("SINIF VE COLON ADI G›R")
-    bd.GetString "snf", "SINIF G›R", "BAYRAMPASA", 20
-    bd.GetString "col", "ID KOLON ADI G›R", "OBJECTID", 20
-    bd.GetString "co", "TEMAT›K KOLON ADI G›R", "ANA_FONKSIYON_Z", 20
+    set bd = .NewBDialog("SINIF VE COLON ADI G√ùR")
+    bd.GetString "snf", "SINIF G√ùR", "BAYRAMPASA", 20
+    bd.GetString "col", "ID KOLON ADI G√ùR", "OBJECTID", 20
+    bd.GetString "co", "TEMAT√ùK KOLON ADI G√ùR", "ANA_FONKSIYON_Z", 20
     bd.showmodal
     snf = bd.ValueByName("snf")
     co = bd.ValueByName("co")
